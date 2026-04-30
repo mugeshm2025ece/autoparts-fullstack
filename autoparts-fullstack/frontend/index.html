@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AutoParts Yard</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--red:#e63946;--dark:#1a1a2e;--green:#27a96c;--amber:#d97706;--bg:#f5f5f3;--card:#fff;--border:#e2e2e0;--text:#1a1a18;--text2:#6b6b68;--text3:#9b9b98;--radius:10px}
+body{font-family:'Segoe UI',system-ui,sans-serif;color:var(--text);background:var(--bg);font-size:14px}
+.topbar{background:var(--dark);color:#fff;height:54px;display:flex;align-items:center;padding:0 1.25rem;gap:10px;position:sticky;top:0;z-index:100}
+.logo{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700;color:#fff;cursor:pointer;white-space:nowrap}
+.logo-icon{width:30px;height:30px;background:var(--red);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:15px}
+.search-box{flex:1;max-width:400px;display:flex;align-items:center;background:rgba(255,255,255,.1);border-radius:7px;padding:0 10px;height:34px;gap:7px}
+.search-box input{background:none;border:none;outline:none;color:#fff;font-size:13px;width:100%;font-family:inherit}
+.search-box input::placeholder{color:rgba(255,255,255,.4)}
+.tb-right{display:flex;align-items:center;gap:7px;margin-left:auto}
+.tb-btn{background:rgba(255,255,255,.1);border:none;color:#fff;border-radius:6px;padding:5px 12px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;white-space:nowrap}
+.tb-btn:hover{background:rgba(255,255,255,.2)}
+.tb-btn.red{background:var(--red)}
+.badge{background:#fff;color:var(--red);border-radius:9px;font-size:10px;font-weight:700;padding:1px 5px;min-width:16px;text-align:center}
+.avatar{width:28px;height:28px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;cursor:pointer}
+.layout{display:flex;min-height:calc(100vh - 54px)}
+.sidebar{width:200px;background:var(--card);border-right:1px solid var(--border);padding:.875rem;flex-shrink:0;overflow-y:auto}
+.sb-title{font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.7px;margin:12px 0 7px;padding-top:10px;border-top:1px solid var(--border)}
+.sb-title:first-child{margin-top:0;border-top:none;padding-top:0}
+.fr{display:flex;align-items:center;gap:7px;padding:3px 0;font-size:12px}
+.fr input[type=checkbox]{accent-color:var(--red);width:13px;height:13px;cursor:pointer;flex-shrink:0}
+.fr label{cursor:pointer;flex:1}
+.main{flex:1;padding:1rem;min-width:0;overflow-y:auto}
+.toolbar{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.rc{font-size:12px;color:var(--text2);flex:1}
+.sort-s{font-size:12px;padding:5px 8px;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--text);font-family:inherit;cursor:pointer}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:border-color .15s,transform .1s}
+.card:hover{border-color:#ccc;transform:translateY(-1px)}
+.card-img{height:118px;display:flex;align-items:center;justify-content:center;background:#f0f0ee;position:relative;overflow:hidden;font-size:34px}
+.card-img img{width:100%;height:100%;object-fit:cover}
+.cond-tag{position:absolute;top:6px;right:6px;font-size:9px;font-weight:700;padding:2px 6px;border-radius:7px}
+.cN{background:#bbf7d0;color:#14532d}.cG{background:#fef08a;color:#713f12}.cF{background:#fed7aa;color:#7c2d12}
+.card-body{padding:9px 11px 11px}
+.card-cat{font-size:9px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+.card-name{font-size:12px;font-weight:600;margin-bottom:1px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-sub{font-size:10px;color:var(--text2);margin-bottom:5px}
+.stars{font-size:10px;color:var(--amber);margin-bottom:5px}
+.card-foot{display:flex;align-items:center;justify-content:space-between}
+.price{font-size:14px;font-weight:700}
+.add-btn{background:var(--red);border:none;color:#fff;border-radius:5px;padding:4px 9px;font-size:10px;font-weight:600;cursor:pointer;font-family:inherit}
+.no-r{grid-column:1/-1;text-align:center;padding:3rem;color:var(--text2);font-size:13px}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:flex-start;justify-content:center;padding:1.5rem 1rem;overflow-y:auto}
+.overlay.show{display:flex}
+.modal{background:var(--card);border-radius:var(--radius);width:100%;max-width:500px;padding:1.25rem;animation:pop .18s ease}
+@keyframes pop{from{transform:translateY(10px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.modal-head h3{font-size:14px;font-weight:700}
+.cx{background:none;border:1px solid var(--border);border-radius:5px;padding:3px 9px;font-size:11px;cursor:pointer;color:var(--text2);font-family:inherit}
+.modal-img{width:100%;height:180px;background:#f0f0ee;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:52px;margin-bottom:12px;overflow:hidden}
+.modal-img img{width:100%;height:100%;object-fit:cover}
+.m-thumbs{display:flex;gap:6px;margin-bottom:10px;overflow-x:auto}
+.m-thumb{width:46px;height:46px;border-radius:5px;object-fit:cover;cursor:pointer;border:2px solid transparent;flex-shrink:0}
+.m-thumb.active{border-color:var(--red)}
+.tags{margin-bottom:8px}
+.tag{display:inline-block;font-size:10px;padding:2px 7px;background:#f0f0ee;border-radius:8px;color:var(--text2);margin-right:3px;margin-bottom:3px}
+.dg{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:10px}
+.dc{background:#f5f5f3;border-radius:7px;padding:7px 9px}
+.dl{font-size:10px;color:var(--text2);margin-bottom:2px}
+.dv{font-size:12px;font-weight:600}
+.m-price{font-size:21px;font-weight:700;margin-bottom:10px}
+.btn-f{width:100%;border:none;border-radius:7px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;margin-bottom:7px}
+.btn-red{background:var(--red);color:#fff}.btn-green{background:#25d366;color:#fff}.btn-dark{background:var(--dark);color:#fff}
+.btn-outline{background:none;border:1px solid var(--border);color:var(--text);border-radius:7px;padding:8px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;width:100%;margin-bottom:6px}
+.sok{color:#15803d;font-size:11px;font-weight:600}.sno{color:#b91c1c;font-size:11px;font-weight:600}
+.cart-drawer{position:fixed;right:0;top:54px;bottom:0;width:300px;background:var(--card);border-left:1px solid var(--border);z-index:150;display:flex;flex-direction:column;transform:translateX(300px);transition:transform .22s}
+.cart-drawer.open{transform:translateX(0)}
+.cd-head{padding:.875rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.cd-title{font-size:13px;font-weight:700}
+.cd-items{flex:1;overflow-y:auto;padding:.5rem 1rem}
+.ci{display:flex;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)}
+.ci-img{width:40px;height:40px;background:#f0f0ee;border-radius:5px;flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:16px}
+.ci-img img{width:100%;height:100%;object-fit:cover}
+.ci-info{flex:1;min-width:0}
+.ci-name{font-size:11px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ci-sub{font-size:10px;color:var(--text2)}
+.qty-row{display:flex;align-items:center;gap:3px;margin-top:4px}
+.qb{width:20px;height:20px;border:1px solid var(--border);background:none;border-radius:3px;cursor:pointer;font-size:12px;font-family:inherit}
+.qv{font-size:11px;min-width:14px;text-align:center}
+.ci-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.ci-price{font-size:11px;font-weight:700}
+.ci-rm{background:none;border:none;font-size:10px;color:var(--red);cursor:pointer;font-family:inherit}
+.cd-foot{padding:.875rem 1rem;border-top:1px solid var(--border)}
+.promo-row{display:flex;gap:6px;margin-bottom:10px}
+.promo-row input{flex:1;font-size:12px;padding:6px 8px;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--text);font-family:inherit}
+.promo-btn{background:var(--dark);border:none;color:#fff;border-radius:6px;padding:6px 10px;font-size:11px;cursor:pointer;font-family:inherit}
+.tot-rows{margin-bottom:10px}
+.tr2{display:flex;justify-content:space-between;font-size:12px;padding:2px 0}
+.tr2.bold{font-weight:700;font-size:13px;border-top:1px solid var(--border);padding-top:6px;margin-top:4px}
+.disc{color:var(--green);font-weight:600}
+.empty-c{text-align:center;color:var(--text2);font-size:12px;padding:1.5rem 0}
+.fld{display:flex;flex-direction:column;gap:4px;margin-bottom:9px}
+.fld label{font-size:11px;font-weight:600;color:var(--text2)}
+.fld input,.fld select,.fld textarea{font-size:12px;padding:7px 9px;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--text);font-family:inherit;width:100%}
+.fld input:focus,.fld select:focus,.fld textarea:focus{outline:none;border-color:var(--red)}
+.fld textarea{resize:vertical;min-height:60px;line-height:1.5}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px}
+.ferr{font-size:11px;color:#b91c1c;margin-top:5px;display:none}
+.admin-wrap{padding:1rem 1.25rem;min-height:calc(100vh - 54px)}
+.admin-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.admin-head h2{font-size:15px;font-weight:700}
+.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1rem}
+.sc{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:10px 13px}
+.sl{font-size:10px;color:var(--text2);margin-bottom:3px;font-weight:500}
+.sv{font-size:19px;font-weight:700}
+.sv.green{color:var(--green)}.sv.red{color:var(--red)}
+.tabs{display:flex;gap:6px;margin-bottom:1rem;border-bottom:1px solid var(--border);padding-bottom:8px}
+.tab{padding:5px 13px;border:1px solid var(--border);border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;background:none;color:var(--text2);font-family:inherit}
+.tab.on{background:var(--dark);color:#fff;border-color:var(--dark)}
+.tbl{width:100%;border-collapse:collapse;font-size:11px}
+.tbl th{text-align:left;padding:6px 8px;border-bottom:1px solid var(--border);font-weight:700;color:var(--text2);font-size:10px;white-space:nowrap;text-transform:uppercase}
+.tbl td{padding:6px 8px;border-bottom:1px solid var(--border);vertical-align:middle}
+.tbl tr:hover td{background:#fafafa}
+.ti{width:30px;height:30px;border-radius:4px;object-fit:cover;background:#f0f0ee;display:flex;align-items:center;justify-content:center;font-size:14px;border:1px solid var(--border)}
+.tf{display:flex;gap:4px}
+.te{background:none;border:1px solid var(--border);border-radius:4px;padding:2px 7px;font-size:10px;font-weight:600;cursor:pointer;color:var(--text);font-family:inherit}
+.td2{background:none;border:1px solid #fca5a5;border-radius:4px;padding:2px 7px;font-size:10px;font-weight:600;cursor:pointer;color:#b91c1c;font-family:inherit}
+.img-zone{border:1.5px dashed var(--border);border-radius:8px;padding:14px;text-align:center;cursor:pointer;position:relative;margin-bottom:8px}
+.img-zone:hover{background:#fafafa}
+.img-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.tw-wrap{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:9px}
+.tw{position:relative;width:56px;height:56px}
+.tw img{width:100%;height:100%;object-fit:cover;border-radius:5px;border:1px solid var(--border)}
+.tw-del{position:absolute;top:-4px;right:-4px;width:15px;height:15px;background:var(--red);border:none;color:#fff;border-radius:50%;font-size:9px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.fa{display:flex;gap:7px;justify-content:flex-end;margin-top:10px}
+.btn-save{background:var(--red);border:none;color:#fff;border-radius:6px;padding:7px 18px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
+.btn-cancel{background:none;border:1px solid var(--border);color:var(--text2);border-radius:6px;padding:7px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit}
+.sp{font-size:9px;font-weight:700;padding:2px 7px;border-radius:8px;white-space:nowrap}
+.sp-Pending{background:#fef08a;color:#713f12}.sp-Processing{background:#bfdbfe;color:#1e3a8a}
+.sp-Shipped{background:#ddd6fe;color:#4c1d95}.sp-Delivered{background:#bbf7d0;color:#14532d}
+.sp-Cancelled{background:#fca5a5;color:#7f1d1d}.sp-Open{background:#fef08a;color:#713f12}
+.sp-InProgress{background:#bfdbfe;color:#1e3a8a}.sp-Quoted{background:#bbf7d0;color:#14532d}
+.login-wrap{display:flex;align-items:center;justify-content:center;padding:2rem;min-height:calc(100vh - 54px)}
+.login-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;width:100%;max-width:320px}
+.login-logo{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;margin-bottom:1.5rem}
+.login-logo-i{width:30px;height:30px;background:var(--red);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px}
+.login-switch{font-size:11px;color:var(--text2);text-align:center;margin-top:10px;cursor:pointer}
+.login-switch span{color:var(--red);font-weight:700}
+.profile-wrap{padding:1.25rem;max-width:620px}
+.ph{display:flex;align-items:center;gap:12px;margin-bottom:1.25rem}
+.pav{width:50px;height:50px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;flex-shrink:0}
+.oc{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:9px}
+.och{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
+.oci{font-size:11px;font-weight:700;font-family:monospace}
+.ocf{display:flex;align-items:center;justify-content:space-between}
+.pb{height:3px;background:#f0f0ee;border-radius:3px;overflow:hidden;margin-top:7px}
+.pf{height:100%;background:var(--green);border-radius:3px;transition:width .4s}
+.urg-row{display:flex;gap:8px;margin-bottom:10px}
+.urg{flex:1;border:1px solid var(--border);border-radius:8px;padding:8px;text-align:center;cursor:pointer}
+.urg.sel{border-color:var(--red);background:rgba(230,57,70,.06)}
+.urg-em{font-size:16px;display:block;margin-bottom:2px}
+.urg-l{font-size:11px;font-weight:600}
+.urg-s{font-size:9px;color:var(--text2);margin-top:1px}
+.pm{border:1.5px solid var(--border);border-radius:8px;padding:10px;text-align:center;cursor:pointer}
+.pm.sel{border-color:var(--red)}
+.pm-icon{font-size:20px;margin-bottom:3px}
+.pm-l{font-size:11px;font-weight:700}
+.pm-s{font-size:9px;color:var(--text2)}
+.upi-wrap{display:none;margin-top:8px}
+.upi-wrap.show{display:block}
+.success-wrap{text-align:center;padding:1.5rem 0}
+.sref{font-family:monospace;font-size:12px;background:#f5f5f3;padding:6px 14px;border-radius:8px;display:inline-block;margin:8px 0 12px}
+.track{background:#f5f5f3;border-radius:8px;padding:10px 12px;text-align:left;margin-bottom:12px}
+.trow{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:12px}
+.tdot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.td-done{background:var(--green)}.td-act{background:var(--amber)}.td-grey{background:var(--border)}
+.req-wrap{max-width:600px;padding:1.25rem}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--dark);color:#fff;padding:9px 20px;border-radius:8px;font-size:12px;font-weight:500;z-index:999;opacity:0;transition:opacity .25s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1}
+.loverlay{position:fixed;inset:0;background:rgba(255,255,255,.75);z-index:500;display:none;align-items:center;justify-content:center;flex-direction:column;gap:10px;font-size:13px;color:var(--text2)}
+.loverlay.show{display:flex}
+.lspinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--red);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:640px){.sidebar{display:none}.sg{grid-template-columns:1fr 1fr}.cart-drawer{width:100%}}
+</style>
+</head>
+<body>
+
+<div class="loverlay" id="LO"><div class="lspinner"></div><div>Loading...</div></div>
+<div class="toast" id="TT"></div>
+
+<div class="topbar">
+  <div class="logo" onclick="goShop()"><div class="logo-icon">⚙</div>AutoParts Yard</div>
+  <div class="search-box"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="rgba(255,255,255,.5)" stroke-width="1.5"/><line x1="10.5" y1="10.5" x2="14" y2="14" stroke="rgba(255,255,255,.5)" stroke-width="1.5" stroke-linecap="round"/></svg>
+  <input type="text" id="SI" placeholder="Search brand, model, spare part..." oninput="onSearch()"></div>
+  <div class="tb-right">
+    <button class="tb-btn" onclick="goShop()">🏪 Shop</button>
+    <button class="tb-btn" onclick="goAdmin()">⚙ Admin</button>
+    <button class="tb-btn" onclick="goReq()">📋 Request Part</button>
+    <div id="authBtns"><button class="tb-btn" onclick="showLogin()">Login</button></div>
+    <div id="userBtns" style="display:none;align-items:center;gap:6px"><div class="avatar" id="UA" onclick="goProfile()">?</div></div>
+    <button class="tb-btn red" onclick="toggleCart()">🛒 <span class="badge" id="CB">0</span></button>
+  </div>
+</div>
+
+<!-- SHOP -->
+<div id="shopView">
+  <div class="layout">
+    <div class="sidebar">
+      <div class="sb-title">Brand</div><div id="bF"></div>
+      <div class="sb-title">Category</div><div id="cF"></div>
+      <div class="sb-title">Condition</div>
+      <div class="fr"><input type="checkbox" id="fcN" onchange="applyF()"><label for="fcN">New stock</label></div>
+      <div class="fr"><input type="checkbox" id="fcG" onchange="applyF()"><label for="fcG">Good</label></div>
+      <div class="fr"><input type="checkbox" id="fcF" onchange="applyF()"><label for="fcF">Fair</label></div>
+      <div class="sb-title">Max Price</div>
+      <input type="range" min="0" max="60000" value="60000" step="500" id="PR" oninput="priceChg()" style="width:100%">
+      <div style="font-size:11px;color:var(--text2);margin-top:3px">Up to: <span id="PD">₹60,000</span></div>
+      <div class="sb-title">Rating</div>
+      <div class="fr"><input type="checkbox" id="r4" onchange="applyF()"><label for="r4">4★ & above</label></div>
+      <div class="fr"><input type="checkbox" id="r3" onchange="applyF()"><label for="r3">3★ & above</label></div>
+    </div>
+    <div class="main">
+      <div class="toolbar">
+        <span class="rc" id="RC">Loading...</span>
+        <select class="sort-s" id="SS" onchange="applyF()">
+          <option value="">Default</option><option value="price_asc">Price ↑</option>
+          <option value="price_desc">Price ↓</option><option value="name">Name A–Z</option>
+          <option value="rating">Top Rated</option>
+        </select>
+      </div>
+      <div class="grid" id="PG"><div class="no-r">Loading parts...</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="adminView" style="display:none">
+  <div class="admin-wrap">
+    <div class="admin-head"><h2>⚙ Admin Panel</h2><button class="btn-cancel" onclick="adminOut()">Logout</button></div>
+    <div class="sg" id="SG"></div>
+    <div class="tabs">
+      <button class="tab on" onclick="aTab('inv',this)">Inventory</button>
+      <button class="tab" onclick="aTab('add',this)">Add Part</button>
+      <button class="tab" onclick="aTab('ord',this)">Orders</button>
+      <button class="tab" onclick="aTab('req',this)">Requests</button>
+      <button class="tab" onclick="aTab('rep',this)">Reports</button>
+    </div>
+    <div id="invTab">
+      <div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Img</th><th>Name</th><th>Brand</th><th>Model</th><th>Category</th><th>Price</th><th>Stock</th><th>Actions</th></tr></thead><tbody id="IB"></tbody></table></div>
+    </div>
+    <div id="addTab" style="display:none">
+      <div class="fg2"><div class="fld"><label>Part Name *</label><input id="fn" placeholder="e.g. Front Bumper"></div><div class="fld"><label>Category *</label><select id="fcat"><option>Body</option><option>Engine</option><option>Electrical</option><option>Transmission</option><option>Brakes</option><option>AC</option><option>Drivetrain</option><option>Steering</option><option>Fuel System</option><option>Exhaust</option><option>Interior</option><option>Suspension</option><option>Other</option></select></div></div>
+      <div class="fg3"><div class="fld"><label>Brand *</label><input id="fb" placeholder="Maruti Suzuki"></div><div class="fld"><label>Car Model *</label><input id="fm" placeholder="Swift"></div><div class="fld"><label>Year Range</label><input id="fy" placeholder="2018-2022"></div></div>
+      <div class="fg3"><div class="fld"><label>Price (₹) *</label><input id="fp" type="number" placeholder="2500"></div><div class="fld"><label>Stock Qty</label><input id="fs" type="number" value="1"></div><div class="fld"><label>Condition</label><select id="fco"><option>Good</option><option>New</option><option>Fair</option></select></div></div>
+      <div class="fld"><label>Description</label><textarea id="fd" placeholder="Condition details, fitment notes..."></textarea></div>
+      <div class="fld">
+        <label>Part Images</label>
+        <div class="img-zone"><input type="file" accept="image/*" multiple id="II" onchange="handleImgs(event)"><div style="font-size:20px;margin-bottom:3px">📷</div><div style="font-size:12px;color:var(--text2)">Click to upload images</div><div style="font-size:10px;color:var(--text3);margin-top:2px">JPG · PNG · WEBP · multiple allowed</div></div>
+        <div class="tw-wrap" id="TP"></div>
+      </div>
+      <div class="fld"><label>Fallback Emoji</label><select id="fi"><option value="🔧">🔧 Generic</option><option value="⚙️">⚙️ Engine</option><option value="🚗">🚗 Body</option><option value="🚪">🚪 Door</option><option value="⚡">⚡ Electrical</option><option value="💡">💡 Light</option><option value="❄️">❄️ AC</option><option value="🛑">🛑 Brake</option><option value="🔩">🔩 Axle</option><option value="⛽">⛽ Fuel</option><option value="🏭">🏭 Engine Block</option><option value="🎯">🎯 Steering</option></select></div>
+      <div id="addErr" class="ferr">Please fill required fields (*)</div>
+      <div class="fa"><button class="btn-cancel" onclick="resetPF()">Reset</button><button class="btn-save" id="SPB" onclick="savePart()">Save Part</button></div>
+    </div>
+    <div id="ordTab" style="display:none"><div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Order #</th><th>Customer</th><th>Items</th><th>Total</th><th>Payment</th><th>Status</th><th>Date</th><th>Action</th></tr></thead><tbody id="OB"></tbody></table></div></div>
+    <div id="reqTab" style="display:none"><div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Req #</th><th>Part</th><th>Brand/Model</th><th>Urgency</th><th>Contact</th><th>Budget</th><th>Status</th><th>Action</th></tr></thead><tbody id="RB"></tbody></table></div></div>
+    <div id="repTab" style="display:none">
+      <div class="sg" id="RS"></div>
+      <div style="margin-top:12px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px"><div style="font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Top Categories</div><div id="CC"></div></div>
+      <div style="margin-top:10px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px"><div style="font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Recent Orders</div><div id="AL"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div id="loginView" style="display:none">
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="login-logo"><div class="login-logo-i">⚙</div><span id="LT">Login</span></div>
+      <div class="fld"><label>Email</label><input id="le" type="email" placeholder="you@email.com"></div>
+      <div class="fld"><label>Password</label><input id="lp" type="password" placeholder="••••••"></div>
+      <div id="regX" style="display:none">
+        <div class="fld"><label>Full Name</label><input id="ln" placeholder="Your name"></div>
+        <div class="fld"><label>Phone</label><input id="lph" placeholder="+91 9876543210"></div>
+      </div>
+      <div id="LE" class="ferr">Invalid credentials</div>
+      <button class="btn-f btn-dark" id="LB" onclick="doLogin()" style="margin-top:6px">Login</button>
+      <div style="font-size:10px;color:var(--text3);text-align:center;margin-top:8px" id="LH">Demo: admin@autoparts.com / admin123</div>
+      <div class="login-switch" id="LS" onclick="toggleReg()">New user? <span>Register here</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE -->
+<div id="profileView" style="display:none">
+  <div class="profile-wrap">
+    <div class="ph">
+      <div class="pav" id="PA">?</div>
+      <div><div style="font-size:15px;font-weight:700" id="PN">—</div><div style="font-size:12px;color:var(--text2)" id="PE">—</div></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:1.25rem;flex-wrap:wrap">
+      <button class="btn-cancel" onclick="goShop()">Continue Shopping</button>
+      <button class="btn-cancel" onclick="goReq()">Request a Part ↗</button>
+      <button class="btn-cancel" onclick="doLogout()" style="color:#b91c1c;border-color:#fca5a5">Logout</button>
+    </div>
+    <div style="font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">My Orders</div>
+    <div id="MO"><div style="font-size:12px;color:var(--text2)">Loading...</div></div>
+  </div>
+</div>
+
+<!-- REQUEST PART -->
+<div id="reqView" style="display:none">
+  <div class="req-wrap">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:1px solid var(--border)">
+      <div style="width:36px;height:36px;background:var(--red);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">⚙</div>
+      <div><div style="font-size:15px;font-weight:700">Request an unlisted spare part</div><div style="font-size:12px;color:var(--text2)">We'll source it and contact you within 24 hrs</div></div>
+    </div>
+    <div id="RFW">
+      <div style="font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:9px">Car Details</div>
+      <div class="fg3"><div class="fld"><label>Brand *</label><input id="rBr" placeholder="Maruti Suzuki"></div><div class="fld"><label>Model *</label><input id="rMo" placeholder="Swift"></div><div class="fld"><label>Year</label><input id="rYr" placeholder="2019"></div></div>
+      <div class="fg2"><div class="fld"><label>Fuel</label><select id="rFu"><option value="">—</option><option>Petrol</option><option>Diesel</option><option>CNG</option><option>Electric</option></select></div><div class="fld"><label>Transmission</label><select id="rTr"><option value="">—</option><option>Manual</option><option>Automatic</option><option>AMT</option></select></div></div>
+      <div style="font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;margin:12px 0 9px">Part Details</div>
+      <div class="fg2"><div class="fld"><label>Part Name *</label><input id="rPa" placeholder="Front suspension arm"></div><div class="fld"><label>Category</label><select id="rCa"><option value="">—</option><option>Body</option><option>Engine</option><option>Electrical</option><option>Transmission</option><option>Brakes</option><option>Suspension</option><option>AC</option><option>Steering</option><option>Interior</option><option>Other</option></select></div></div>
+      <div class="fg2"><div class="fld"><label>Side / Position</label><select id="rSi"><option value="">N/A</option><option>Front Left</option><option>Front Right</option><option>Rear Left</option><option>Rear Right</option></select></div><div class="fld"><label>OEM / Part No.</label><input id="rOe" placeholder="Optional"></div></div>
+      <div class="fld"><label>Description</label><textarea id="rDe" placeholder="Any extra details..."></textarea></div>
+      <div style="font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px">Urgency</div>
+      <div class="urg-row">
+        <div class="urg sel" onclick="selUrg(this,'flexible')"><span class="urg-em">🕐</span><div class="urg-l">Flexible</div><div class="urg-s">1–2 weeks</div></div>
+        <div class="urg" onclick="selUrg(this,'soon')"><span class="urg-em">🕑</span><div class="urg-l">Soon</div><div class="urg-s">2–5 days</div></div>
+        <div class="urg" onclick="selUrg(this,'urgent')"><span class="urg-em">⚡</span><div class="urg-l">Urgent</div><div class="urg-s">Today</div></div>
+      </div>
+      <div class="fg2"><div class="fld"><label>Budget Min (₹)</label><input id="rBn" type="number" placeholder="500"></div><div class="fld"><label>Budget Max (₹)</label><input id="rBx" type="number" placeholder="5000"></div></div>
+      <div style="font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;margin:12px 0 9px">Your Contact</div>
+      <div class="fg2"><div class="fld"><label>Full Name *</label><input id="rNa" placeholder="Your name"></div><div class="fld"><label>WhatsApp / Phone *</label><input id="rPh" placeholder="+91 9876543210"></div></div>
+      <div class="fg2"><div class="fld"><label>Email</label><input id="rEm" type="email" placeholder="optional@email.com"></div><div class="fld"><label>Preferred Contact</label><select id="rCo"><option>WhatsApp</option><option>Phone call</option><option>Email</option></select></div></div>
+      <div id="RE" class="ferr">Fill required fields (*)</div>
+      <button class="btn-f btn-dark" onclick="submitReq()" style="margin-top:10px">Submit Part Request</button>
+      <button class="btn-f btn-green" onclick="waReq()">📱 Send via WhatsApp</button>
+    </div>
+    <div id="RS2" style="display:none">
+      <div class="success-wrap">
+        <div style="font-size:42px;margin-bottom:10px">✅</div>
+        <div style="font-size:15px;font-weight:700;margin-bottom:5px">Request Submitted!</div>
+        <div style="font-size:12px;color:var(--text2);margin-bottom:10px">Our team will contact you within 24 hrs.</div>
+        <div class="sref" id="RR">REQ-0001</div>
+        <div class="track"><div class="trow"><div class="tdot td-done"></div> Request received</div><div class="trow"><div class="tdot td-act"></div> Sourcing from network</div><div class="trow"><div class="tdot td-grey"></div> Quote sent to you</div><div class="trow"><div class="tdot td-grey"></div> Part dispatched</div></div>
+        <div style="display:flex;gap:8px;justify-content:center"><button class="btn-cancel" onclick="resetReq()">New Request</button><button class="btn-cancel" onclick="goShop()">Back to Shop</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PART DETAIL MODAL -->
+<div class="overlay" id="DO" onclick="closeDO(event)">
+  <div class="modal">
+    <div class="modal-head"><h3 id="DT">Part Details</h3><button class="cx" onclick="hideD()">Close</button></div>
+    <div class="modal-img" id="DI"></div>
+    <div class="m-thumbs" id="DTH"></div>
+    <div style="margin-bottom:8px" id="DR"></div>
+    <div class="tags" id="DTAG"></div>
+    <div class="dg" id="DD"></div>
+    <div class="m-price" id="DP"></div>
+    <button class="btn-f btn-red" id="DAB">Add to Cart</button>
+    <button class="btn-f btn-green" id="DWA">📱 Enquire on WhatsApp</button>
+  </div>
+</div>
+
+<!-- PAYMENT MODAL -->
+<div class="overlay" id="PO" onclick="closePO(event)">
+  <div class="modal"><div class="modal-head"><h3>Secure Checkout</h3><button class="cx" onclick="hideP()">Close</button></div><div id="PC"></div></div>
+</div>
+
+<!-- REQUEST DETAIL MODAL (Admin) -->
+<div class="overlay" id="RDO" onclick="closeRDO(event)">
+  <div class="modal" style="max-width:440px"><div class="modal-head"><h3>Request Detail</h3><button class="cx" onclick="hideRDO()">Close</button></div><div id="RDC"></div></div>
+</div>
+
+<!-- CART DRAWER -->
+<div class="cart-drawer" id="CD">
+  <div class="cd-head"><span class="cd-title">Your Cart</span><button class="cx" onclick="toggleCart()">Close</button></div>
+  <div class="cd-items" id="CDI"></div>
+  <div class="cd-foot">
+    <div class="promo-row"><input type="text" id="PI" placeholder="Promo code (YARD10)"><button class="promo-btn" onclick="applyPromo()">Apply</button></div>
+    <div class="tot-rows" id="TR"></div>
+    <button class="btn-f btn-dark" onclick="openPay()">💳 Proceed to Payment</button>
+    <button class="btn-f btn-green" onclick="waOrder()" style="margin-bottom:7px">📱 Order via WhatsApp</button>
+    <button class="btn-outline" onclick="goReq()">Request unlisted part ↗</button>
+  </div>
+</div>
+
+<script>
+// ── CONFIG ── Change this to your deployed backend URL
+const API = 'http://localhost:3000/api';
+
+let parts = [], cart = [], promoDsc = 0, promoC = null;
+let token = localStorage.getItem('ap_token') || null;
+let user = JSON.parse(localStorage.getItem('ap_user') || 'null');
+let editPId = null, adminImgs = [], urgency = 'flexible', maxP = 60000, isReg = false;
+
+// ── API ──
+async function api(path, opts = {}) {
+  const h = { 'Content-Type': 'application/json', ...(token ? { Authorization: 'Bearer ' + token } : {}), ...(opts.headers || {}) };
+  const r = await fetch(API + path, { ...opts, headers: h });
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(d.error || 'Error ' + r.status);
+  return d;
+}
+async function apiUp(path, fd) {
+  const h = token ? { Authorization: 'Bearer ' + token } : {};
+  const r = await fetch(API + path, { method: 'POST', headers: h, body: fd });
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(d.error || 'Upload failed');
+  return d;
+}
+
+// ── UI helpers ──
+function showL() { document.getElementById('LO').classList.add('show'); }
+function hideL() { document.getElementById('LO').classList.remove('show'); }
+let tt;
+function toast(m, e = false) {
+  const t = document.getElementById('TT'); t.textContent = m;
+  t.style.background = e ? '#b91c1c' : 'var(--dark)';
+  t.classList.add('show'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('show'), 2800);
+}
+function showV(v) {
+  ['shopView','adminView','loginView','profileView','reqView'].forEach(id => {
+    document.getElementById(id).style.display = id === v ? 'block' : 'none';
+  });
+}
+function ini(n) { return (n || '?').split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2); }
+function stars(r) { const n = Math.round(r || 0); return '★'.repeat(n) + '☆'.repeat(5 - n); }
+function cc(c) { return c === 'New' ? 'cN' : c === 'Good' ? 'cG' : 'cF'; }
+function pimg(p) {
+  if (p.images && p.images.length) { const u = p.images[0].url || p.images[0]; return `<img src="${u}" alt="${p.name}" onerror="this.parentNode.innerHTML='<span>${p.icon||'🔧'}</span>'">`; }
+  return `<span>${p.icon || '🔧'}</span>`;
+}
+
+// ── VIEWS ──
+function goShop() { showV('shopView'); loadParts(); }
+function goAdmin() { if (!token || user?.role !== 'admin') { showLogin(); return; } showV('adminView'); loadDash(); aTab('inv', document.querySelector('.tab')); }
+function goProfile() { if (!user) { showLogin(); return; } document.getElementById('PA').textContent = ini(user.name); document.getElementById('PN').textContent = user.name; document.getElementById('PE').textContent = user.email; showV('profileView'); loadMyOrders(); }
+function goReq() { showV('reqView'); }
+function showLogin() { showV('loginView'); }
+
+// ── AUTH ──
+function setU(u, t) {
+  token = t; user = u;
+  localStorage.setItem('ap_token', t); localStorage.setItem('ap_user', JSON.stringify(u));
+  document.getElementById('authBtns').style.display = 'none';
+  document.getElementById('userBtns').style.display = 'flex';
+  document.getElementById('UA').textContent = ini(u.name);
+}
+function clearU() {
+  token = null; user = null;
+  localStorage.removeItem('ap_token'); localStorage.removeItem('ap_user');
+  document.getElementById('authBtns').style.display = 'block';
+  document.getElementById('userBtns').style.display = 'none';
+}
+function toggleReg() {
+  isReg = !isReg;
+  document.getElementById('regX').style.display = isReg ? 'block' : 'none';
+  document.getElementById('LB').textContent = isReg ? 'Register' : 'Login';
+  document.getElementById('LT').textContent = isReg ? 'Create Account' : 'Login';
+  document.getElementById('LH').style.display = isReg ? 'none' : 'block';
+  document.getElementById('LS').innerHTML = isReg ? 'Already have an account? <span>Login</span>' : 'New user? <span>Register here</span>';
+}
+async function doLogin() {
+  const e = document.getElementById('le').value.trim(), p = document.getElementById('lp').value;
+  document.getElementById('LE').style.display = 'none';
+  if (!e || !p) { document.getElementById('LE').textContent = 'Email and password required'; document.getElementById('LE').style.display = 'block'; return; }
+  showL();
+  try {
+    const ep = isReg ? '/auth/register' : '/auth/login';
+    const b = isReg ? { email: e, password: p, name: document.getElementById('ln').value.trim() || e.split('@')[0], phone: document.getElementById('lph').value.trim() } : { email: e, password: p };
+    const d = await api(ep, { method: 'POST', body: JSON.stringify(b) });
+    setU(d.user, d.token); toast('Welcome, ' + d.user.name + '! ✓');
+    if (d.user.role === 'admin') goAdmin(); else goShop();
+  } catch (err) { document.getElementById('LE').textContent = err.message; document.getElementById('LE').style.display = 'block'; } finally { hideL(); }
+}
+function doLogout() { clearU(); toast('Logged out'); goShop(); }
+function adminOut() { clearU(); toast('Admin logged out'); goShop(); }
+
+// ── PARTS ──
+async function loadParts() {
+  try {
+    showL();
+    const d = await api('/parts?limit=200');
+    parts = d.parts || [];
+    await loadMeta();
+    applyF();
+  } catch { document.getElementById('PG').innerHTML = '<div class="no-r">Could not load parts. Make sure the backend server is running at ' + API + '</div>'; }
+  finally { hideL(); }
+}
+async function loadMeta() {
+  try {
+    const m = await api('/parts/meta');
+    document.getElementById('PR').max = m.maxPrice + 5000;
+    document.getElementById('PR').value = m.maxPrice + 5000;
+    maxP = m.maxPrice + 5000;
+    document.getElementById('PD').textContent = '₹' + maxP.toLocaleString();
+    document.getElementById('bF').innerHTML = (m.brands || []).map(b => `<div class="fr"><input type="checkbox" id="b_${b.replace(/\s+/g,'_')}" onchange="applyF()"><label for="b_${b.replace(/\s+/g,'_')}">${b}</label></div>`).join('');
+    document.getElementById('cF').innerHTML = (m.categories || []).map(c => `<div class="fr"><input type="checkbox" id="c_${c.replace(/\s+/g,'_')}" onchange="applyF()"><label for="c_${c.replace(/\s+/g,'_')}">${c}</label></div>`).join('');
+  } catch {}
+}
+function onSearch() { applyF(); }
+function priceChg() { maxP = parseInt(document.getElementById('PR').value); document.getElementById('PD').textContent = '₹' + maxP.toLocaleString(); applyF(); }
+function applyF() {
+  const q = document.getElementById('SI').value.toLowerCase();
+  const sb = [...new Set(parts.map(p=>p.brand))].filter(b => document.getElementById('b_'+b.replace(/\s+/g,'_'))?.checked);
+  const sc = [...new Set(parts.map(p=>p.category))].filter(c => document.getElementById('c_'+c.replace(/\s+/g,'_'))?.checked);
+  const conds = []; if (document.getElementById('fcN')?.checked) conds.push('New'); if (document.getElementById('fcG')?.checked) conds.push('Good'); if (document.getElementById('fcF')?.checked) conds.push('Fair');
+  const r4 = document.getElementById('r4')?.checked, r3 = document.getElementById('r3')?.checked;
+  const sort = document.getElementById('SS').value;
+  let f = parts.filter(p => {
+    if (q && !`${p.name} ${p.brand} ${p.model} ${p.category}`.toLowerCase().includes(q)) return false;
+    if (sb.length && !sb.includes(p.brand)) return false;
+    if (sc.length && !sc.includes(p.category)) return false;
+    if (conds.length && !conds.includes(p.condition)) return false;
+    if (p.price > maxP) return false;
+    if (r4 && (p.rating||0) < 4) return false;
+    if (r3 && (p.rating||0) < 3) return false;
+    return true;
+  });
+  if (sort === 'price_asc') f.sort((a,b)=>a.price-b.price);
+  else if (sort === 'price_desc') f.sort((a,b)=>b.price-a.price);
+  else if (sort === 'name') f.sort((a,b)=>a.name.localeCompare(b.name));
+  else if (sort === 'rating') f.sort((a,b)=>(b.rating||0)-(a.rating||0));
+  document.getElementById('RC').textContent = f.length + ' part' + (f.length!==1?'s':'');
+  document.getElementById('PG').innerHTML = f.length ? f.map(p => {
+    const id = p._id || p.id;
+    return `<div class="card" onclick="openD('${id}')">
+      <div class="card-img">${pimg(p)}<span class="cond-tag ${cc(p.condition)}">${p.condition}</span></div>
+      <div class="card-body">
+        <div class="card-cat">${p.category}</div>
+        <div class="card-name">${p.name}</div>
+        <div class="card-sub">${p.brand} · ${p.model}</div>
+        <div class="stars">${stars(p.rating)} <span style="font-size:9px;color:var(--text2)">(${p.numReviews||0})</span></div>
+        <div class="card-foot"><span class="price">₹${p.price.toLocaleString()}</span><button class="add-btn" onclick="event.stopPropagation();addCart('${id}')">+ Add</button></div>
+      </div>
+    </div>`;
+  }).join('') : '<div class="no-r">No parts found. Try adjusting filters.</div>';
+}
+
+// ── DETAIL MODAL ──
+async function openD(id) {
+  try {
+    const p = parts.find(x => (x._id||x.id) === id) || await api('/parts/' + id);
+    document.getElementById('DT').textContent = p.name;
+    const imgs = p.images || [];
+    const main = imgs.length ? (imgs[0].url || imgs[0]) : null;
+    document.getElementById('DI').innerHTML = main ? `<img src="${main}" onerror="this.parentNode.innerHTML='<span style=font-size:52px>${p.icon||'🔧'}</span>'">` : `<span style="font-size:52px">${p.icon||'🔧'}</span>`;
+    document.getElementById('DTH').innerHTML = imgs.length > 1 ? imgs.map((img,i) => { const u = img.url||img; return `<img src="${u}" class="m-thumb ${i===0?'active':''}" onclick="selThumb(this,'${u}')">`; }).join('') : '';
+    document.getElementById('DR').innerHTML = `<span style="color:var(--amber);font-size:13px">${stars(p.rating)}</span> <span style="font-size:11px;color:var(--text2)">${p.rating||0} (${p.numReviews||0} reviews)</span>`;
+    document.getElementById('DTAG').innerHTML = [p.brand, p.model, p.year, p.category].filter(Boolean).map(t => `<span class="tag">${t}</span>`).join('');
+    const st = p.stock !== undefined ? p.stock : '?';
+    document.getElementById('DD').innerHTML = `
+      <div class="dc"><div class="dl">Brand</div><div class="dv">${p.brand}</div></div>
+      <div class="dc"><div class="dl">Model</div><div class="dv">${p.model}</div></div>
+      <div class="dc"><div class="dl">Year</div><div class="dv">${p.year||'—'}</div></div>
+      <div class="dc"><div class="dl">Category</div><div class="dv">${p.category}</div></div>
+      <div class="dc"><div class="dl">Condition</div><div class="dv"><span class="cond-tag ${cc(p.condition)}" style="position:static">${p.condition}</span></div></div>
+      <div class="dc"><div class="dl">Stock</div><div class="dv ${st>0?'sok':'sno'}">${st>0?st+' available':'Out of stock'}</div></div>
+      <div class="dc"><div class="dl">SKU</div><div class="dv" style="font-family:monospace;font-size:11px">${p.sku||'—'}</div></div>
+      <div class="dc"><div class="dl">Condition</div><div class="dv">${p.condition}</div></div>
+      ${p.desc?`<div class="dc" style="grid-column:1/-1"><div class="dl">Notes</div><div class="dv" style="font-weight:400">${p.desc}</div></div>`:''}`;
+    document.getElementById('DP').textContent = '₹' + p.price.toLocaleString();
+    document.getElementById('DAB').onclick = () => { addCart(id); hideD(); };
+    document.getElementById('DWA').onclick = () => toast('WhatsApp enquiry sent for: ' + p.name);
+    document.getElementById('DO').classList.add('show');
+  } catch {}
+}
+function selThumb(el, u) { document.querySelectorAll('.m-thumb').forEach(t => t.classList.remove('active')); el.classList.add('active'); document.getElementById('DI').innerHTML = `<img src="${u}">`; }
+function closeDO(e) { if (e.target === document.getElementById('DO')) hideD(); }
+function hideD() { document.getElementById('DO').classList.remove('show'); }
+
+// ── CART ──
+function addCart(id) {
+  const p = parts.find(x => (x._id||x.id) === id); if (!p) return;
+  const ex = cart.find(c => c.id === id);
+  if (ex) ex.qty++; else cart.push({ id, name: p.name, brand: p.brand, model: p.model, price: p.price, icon: p.icon, images: p.images, qty: 1 });
+  updCart(); toast(p.name + ' added ✓');
+}
+function rmCart(id) { cart = cart.filter(c => c.id !== id); updCart(); }
+function chgQ(id, d) { const i = cart.find(c => c.id === id); if (i) { i.qty += d; if (i.qty <= 0) rmCart(id); else updCart(); } }
+async function applyPromo() {
+  const code = document.getElementById('PI').value.trim(); if (!code) return;
+  const sub = cart.reduce((s,c) => s + c.price*c.qty, 0);
+  try { const d = await api('/orders/validate-promo', { method: 'POST', body: JSON.stringify({ code, subtotal: sub }) }); promoDsc = d.discount; promoC = d.code; updCart(); toast('Promo applied! -₹' + d.discount.toLocaleString() + ' ✓'); }
+  catch { promoDsc = 0; promoC = null; updCart(); }
+}
+function updCart() {
+  const sub = cart.reduce((s,c) => s + c.price*c.qty, 0);
+  const total = Math.max(0, sub - promoDsc);
+  document.getElementById('CB').textContent = cart.reduce((s,c) => s+c.qty, 0);
+  document.getElementById('TR').innerHTML = `<div class="tr2"><span>Subtotal</span><span>₹${sub.toLocaleString()}</span></div>${promoDsc?`<div class="tr2"><span class="disc">Promo (${promoC})</span><span class="disc">-₹${promoDsc.toLocaleString()}</span></div>`:''}<div class="tr2"><span>Delivery</span><span style="color:var(--green)">Free</span></div><div class="tr2 bold"><span>Total</span><span>₹${total.toLocaleString()}</span></div>`;
+  document.getElementById('CDI').innerHTML = cart.length ? cart.map(c => {
+    const imgSrc = c.images && c.images.length ? (c.images[0].url||c.images[0]) : null;
+    const img = imgSrc ? `<img src="${imgSrc}" style="width:100%;height:100%;object-fit:cover">` : `<span style="font-size:16px">${c.icon||'🔧'}</span>`;
+    return `<div class="ci"><div class="ci-img">${img}</div><div class="ci-info"><div class="ci-name">${c.name}</div><div class="ci-sub">${c.brand} · ${c.model}</div><div class="qty-row"><button class="qb" onclick="chgQ('${c.id}',-1)">−</button><span class="qv">${c.qty}</span><button class="qb" onclick="chgQ('${c.id}',1)">+</button></div></div><div class="ci-right"><span class="ci-price">₹${(c.price*c.qty).toLocaleString()}</span><button class="ci-rm" onclick="rmCart('${c.id}')">Remove</button></div></div>`;
+  }).join('') : '<div class="empty-c">Cart is empty</div>';
+}
+function toggleCart() { document.getElementById('CD').classList.toggle('open'); }
+function waOrder() { if (!cart.length) { toast('Cart is empty!', true); return; } toast('Opening WhatsApp with your order...'); }
+
+// ── PAYMENT ──
+function openPay() {
+  if (!cart.length) { toast('Cart is empty!', true); return; }
+  if (!token) { toast('Please login to checkout'); showLogin(); return; }
+  const sub = cart.reduce((s,c) => s+c.price*c.qty, 0), total = Math.max(0, sub - promoDsc);
+  document.getElementById('PC').innerHTML = `
+    <div style="font-size:13px;font-weight:700;margin-bottom:3px">Order Summary</div>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:12px">${cart.length} item(s) · Total: <strong>₹${total.toLocaleString()}</strong></div>
+    <div style="font-size:12px;font-weight:700;margin-bottom:8px">Payment Method</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0" id="PM">
+      <div class="pm" onclick="selPay(this,'UPI')"><div class="pm-icon">📱</div><div class="pm-l">UPI</div><div class="pm-s">GPay · PhonePe · Paytm</div></div>
+      <div class="pm" onclick="selPay(this,'Card')"><div class="pm-icon">💳</div><div class="pm-l">Card</div><div class="pm-s">Debit / Credit</div></div>
+      <div class="pm" onclick="selPay(this,'Net Banking')"><div class="pm-icon">🏦</div><div class="pm-l">Net Banking</div><div class="pm-s">All major banks</div></div>
+      <div class="pm" onclick="selPay(this,'COD')"><div class="pm-icon">💵</div><div class="pm-l">Cash on Delivery</div><div class="pm-s">Pay at delivery</div></div>
+    </div>
+    <div class="upi-wrap" id="UW"><div class="fld"><label>UPI ID</label><input id="UI" placeholder="name@upi"></div></div>
+    <div class="fld"><label>Delivery Address *</label><textarea id="DA" placeholder="Full address with PIN code..." style="min-height:70px"></textarea></div>
+    <div style="font-size:10px;color:var(--text2);margin-bottom:10px">🔒 Secure · Free delivery · 7-day return</div>
+    <div id="PE2" class="ferr">Select payment method and enter address</div>
+    <button class="btn-f btn-green" onclick="confirmOrder(${total})">✓ Place Order — ₹${total.toLocaleString()}</button>`;
+  document.getElementById('PO').classList.add('show');
+}
+function selPay(el, m) { document.querySelectorAll('.pm').forEach(p => p.classList.remove('sel')); el.classList.add('sel'); el.dataset.m = m; document.getElementById('UW').className = 'upi-wrap' + (m === 'UPI' ? ' show' : ''); }
+function closePO(e) { if (e.target === document.getElementById('PO')) hideP(); }
+function hideP() { document.getElementById('PO').classList.remove('show'); }
+async function confirmOrder(total) {
+  const sel = document.querySelector('.pm.sel'), addr = document.getElementById('DA')?.value.trim();
+  const err = document.getElementById('PE2');
+  if (!sel || !addr) { err.textContent = 'Select payment method and enter address'; err.style.display = 'block'; return; }
+  err.style.display = 'none';
+  showL();
+  try {
+    const order = await api('/orders', { method: 'POST', body: JSON.stringify({ items: cart.map(c => ({ partId: c.id, qty: c.qty })), address: addr, paymentMethod: sel.dataset.m, promoCode: promoC }) });
+    const oid = order.orderNumber || order.id;
+    cart = []; promoDsc = 0; promoC = null; document.getElementById('PI').value = '';
+    updCart(); document.getElementById('CD').classList.remove('open');
+    document.getElementById('PC').innerHTML = `<div class="success-wrap"><div style="font-size:42px;margin-bottom:10px">✅</div><div style="font-size:15px;font-weight:700;margin-bottom:5px">Order Placed!</div><div style="font-size:12px;color:var(--text2);margin-bottom:8px">₹${total.toLocaleString()} via ${sel.dataset.m}</div><div class="sref">${oid}</div><div class="track"><div class="trow"><div class="tdot td-done"></div> Order confirmed</div><div class="trow"><div class="tdot td-act"></div> Being packed</div><div class="trow"><div class="tdot td-grey"></div> Shipped</div><div class="trow"><div class="tdot td-grey"></div> Delivered</div></div><button class="btn-cancel" onclick="hideP()">Done</button></div>`;
+  } catch {} finally { hideL(); }
+}
+
+// ── MY ORDERS ──
+async function loadMyOrders() {
+  try {
+    const orders = await api('/orders');
+    const el = document.getElementById('MO');
+    if (!orders.length) { el.innerHTML = '<div style="font-size:12px;color:var(--text2)">No orders yet. Start shopping!</div>'; return; }
+    el.innerHTML = orders.map(o => {
+      const pct = { Pending:20, Processing:40, Shipped:65, Delivered:100, Cancelled:0 }[o.status] || 0;
+      return `<div class="oc"><div class="och"><span class="oci">${o.orderNumber||o.id}</span><span style="font-size:10px;color:var(--text2)">${(o.createdAt||'').slice(0,10)}</span></div><div style="font-size:11px;color:var(--text2);margin-bottom:6px">${(o.items||[]).map(i=>i.name+(i.qty>1?` x${i.qty}`:'')).join(', ')}</div><div class="ocf"><span style="font-size:13px;font-weight:700">₹${(o.total||0).toLocaleString()}</span><span class="sp sp-${o.status}">${o.status}</span></div><div class="pb"><div class="pf" style="width:${pct}%"></div></div></div>`;
+    }).join('');
+  } catch {}
+}
+
+// ── REQUEST PART ──
+function selUrg(el, v) { document.querySelectorAll('.urg').forEach(u => u.classList.remove('sel')); el.classList.add('sel'); urgency = v; }
+async function submitReq() {
+  const br = document.getElementById('rBr').value.trim(), mo = document.getElementById('rMo').value.trim();
+  const pa = document.getElementById('rPa').value.trim(), na = document.getElementById('rNa').value.trim(), ph = document.getElementById('rPh').value.trim();
+  const err = document.getElementById('RE');
+  if (!br || !mo || !pa || !na || !ph) { err.style.display = 'block'; return; }
+  err.style.display = 'none';
+  showL();
+  try {
+    const d = await api('/requests', { method: 'POST', body: JSON.stringify({ brand:br, model:mo, year:document.getElementById('rYr').value.trim(), partName:pa, category:document.getElementById('rCa').value, side:document.getElementById('rSi').value, oemNumber:document.getElementById('rOe').value.trim(), urgency, budgetMin:document.getElementById('rBn').value||undefined, budgetMax:document.getElementById('rBx').value||undefined, desc:document.getElementById('rDe').value.trim(), contactName:na, contactPhone:ph, contactEmail:document.getElementById('rEm').value.trim(), contactMethod:document.getElementById('rCo').value }) });
+    document.getElementById('RR').textContent = d.requestNumber || d.id;
+    document.getElementById('RFW').style.display = 'none';
+    document.getElementById('RS2').style.display = 'block';
+  } catch {} finally { hideL(); }
+}
+function waReq() { const br = document.getElementById('rBr').value||'[brand]', mo = document.getElementById('rMo').value||'[model]', pa = document.getElementById('rPa').value||'[part]'; toast('WhatsApp: Requesting ' + pa + ' for ' + br + ' ' + mo); }
+function resetReq() { ['rBr','rMo','rYr','rPa','rOe','rDe','rBn','rBx','rNa','rPh','rEm'].forEach(id => document.getElementById(id).value = ''); urgency = 'flexible'; document.querySelectorAll('.urg').forEach((u,i) => { u.classList.remove('sel'); if(i===0) u.classList.add('sel'); }); document.getElementById('RFW').style.display = 'block'; document.getElementById('RS2').style.display = 'none'; }
+
+// ── ADMIN ──
+function aTab(n, btn) {
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('on'));
+  if (btn) btn.classList.add('on');
+  ['invTab','addTab','ordTab','reqTab','repTab'].forEach(id => document.getElementById(id).style.display = 'none');
+  document.getElementById(n + 'Tab').style.display = 'block';
+  if (n === 'inv') loadInv();
+  if (n === 'ord') loadAOrders();
+  if (n === 'req') loadAReqs();
+  if (n === 'rep') loadRep();
+}
+async function loadDash() {
+  try {
+    const d = await api('/admin/dashboard'); const s = d.stats || {};
+    document.getElementById('SG').innerHTML = `
+      <div class="sc"><div class="sl">Total Parts</div><div class="sv">${s.totalParts||0}</div></div>
+      <div class="sc"><div class="sl">Total Stock</div><div class="sv">${s.totalStock||0}</div></div>
+      <div class="sc"><div class="sl">Revenue</div><div class="sv green" style="font-size:14px">₹${(s.revenue||0).toLocaleString()}</div></div>
+      <div class="sc"><div class="sl">Orders</div><div class="sv">${s.totalOrders||0}</div></div>
+      <div class="sc"><div class="sl">Pending</div><div class="sv red">${s.pendingOrders||0}</div></div>
+      <div class="sc"><div class="sl">Requests</div><div class="sv red">${s.openRequests||0}</div></div>
+      <div class="sc"><div class="sl">Customers</div><div class="sv">${s.totalCustomers||0}</div></div>
+      <div class="sc"><div class="sl">Avg Order</div><div class="sv" style="font-size:14px">₹${(s.avgOrderValue||0).toLocaleString()}</div></div>`;
+  } catch {}
+}
+async function loadInv() {
+  try {
+    const d = await api('/parts?limit=200');
+    document.getElementById('IB').innerHTML = (d.parts||[]).map(p => {
+      const id = p._id||p.id, imgSrc = p.images&&p.images.length ? (p.images[0].url||p.images[0]) : null;
+      const img = imgSrc ? `<img src="${imgSrc}" class="ti">` : `<div class="ti" style="display:flex;align-items:center;justify-content:center">${p.icon||'🔧'}</div>`;
+      return `<tr><td>${img}</td><td style="font-weight:600">${p.name}</td><td>${p.brand}</td><td>${p.model}</td><td>${p.category}</td><td>₹${p.price.toLocaleString()}</td><td style="${p.stock<=1?'color:#b91c1c;font-weight:700':''}">${p.stock}</td><td><div class="tf"><button class="te" onclick="editPart('${id}')">Edit</button><button class="td2" onclick="delPart('${id}','${p.name}')">Del</button></div></td></tr>`;
+    }).join('');
+  } catch {}
+}
+function handleImgs(e) { Array.from(e.target.files).forEach(f => { adminImgs.push(f); renderTP(); }); e.target.value = ''; }
+function renderTP() { document.getElementById('TP').innerHTML = adminImgs.map((f,i) => `<div class="tw"><img src="${URL.createObjectURL(f)}"><button class="tw-del" onclick="rmAImg(${i})">×</button></div>`).join(''); }
+function rmAImg(i) { adminImgs.splice(i,1); renderTP(); }
+async function savePart() {
+  const name = document.getElementById('fn').value.trim(), brand = document.getElementById('fb').value.trim();
+  const model = document.getElementById('fm').value.trim(), price = document.getElementById('fp').value;
+  const err = document.getElementById('addErr');
+  if (!name||!brand||!model||!price) { err.style.display='block'; return; }
+  err.style.display = 'none'; showL();
+  try {
+    const body = { name, brand, model, year:document.getElementById('fy').value.trim(), category:document.getElementById('fcat').value, condition:document.getElementById('fco').value, price:Number(price), stock:Number(document.getElementById('fs').value)||1, desc:document.getElementById('fd').value.trim(), icon:document.getElementById('fi').value };
+    let part;
+    if (editPId) { part = await api('/parts/' + editPId, { method:'PUT', body:JSON.stringify(body) }); toast('Part updated ✓'); }
+    else { part = await api('/parts', { method:'POST', body:JSON.stringify(body) }); toast('Part added ✓'); }
+    if (adminImgs.length) { const fd = new FormData(); adminImgs.forEach(f => fd.append('images',f)); await apiUp('/parts/' + (part._id||part.id) + '/images', fd); }
+    resetPF(); await loadParts(); await loadInv(); aTab('inv', document.querySelectorAll('.tab')[0]);
+  } catch {} finally { hideL(); }
+}
+async function editPart(id) {
+  try {
+    const p = await api('/parts/' + id); editPId = id; adminImgs = [];
+    document.getElementById('fn').value = p.name; document.getElementById('fcat').value = p.category;
+    document.getElementById('fb').value = p.brand; document.getElementById('fm').value = p.model;
+    document.getElementById('fy').value = p.year||''; document.getElementById('fp').value = p.price;
+    document.getElementById('fs').value = p.stock; document.getElementById('fco').value = p.condition;
+    document.getElementById('fd').value = p.desc||''; document.getElementById('fi').value = p.icon||'🔧';
+    document.getElementById('SPB').textContent = 'Update Part';
+    renderTP(); aTab('add', document.querySelectorAll('.tab')[1]);
+  } catch {}
+}
+async function delPart(id, name) {
+  if (!confirm('Delete "' + name + '"?')) return;
+  showL();
+  try { await api('/parts/' + id, { method:'DELETE' }); toast('Part deleted'); await loadParts(); await loadInv(); } catch {} finally { hideL(); }
+}
+function resetPF() { ['fn','fb','fm','fy','fp','fd'].forEach(id => document.getElementById(id).value=''); document.getElementById('fs').value=1; document.getElementById('fco').value='Good'; document.getElementById('fcat').value='Body'; document.getElementById('fi').value='🔧'; adminImgs=[]; renderTP(); editPId=null; document.getElementById('SPB').textContent='Save Part'; document.getElementById('addErr').style.display='none'; }
+async function loadAOrders() {
+  try {
+    const orders = await api('/orders');
+    const statusCycle = ['Pending','Processing','Shipped','Delivered'];
+    document.getElementById('OB').innerHTML = orders.map(o => `<tr><td style="font-family:monospace;font-size:10px">${o.orderNumber||o.id}</td><td>${o.customerName}</td><td style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${(o.items||[]).map(i=>i.name).join(', ')}</td><td>₹${(o.total||0).toLocaleString()}</td><td>${o.paymentMethod||'—'}</td><td><span class="sp sp-${o.status}">${o.status}</span></td><td>${(o.createdAt||'').slice(0,10)}</td><td><button class="te" onclick="cycleOrd('${o.orderNumber||o.id}','${o.status}')">Update</button></td></tr>`).join('');
+  } catch {}
+}
+async function cycleOrd(id, cur) {
+  const steps = ['Pending','Processing','Shipped','Delivered'];
+  const next = steps[(steps.indexOf(cur)+1) % steps.length];
+  showL();
+  try { await api('/orders/' + id + '/status', { method:'PUT', body:JSON.stringify({ status:next }) }); toast('Order ' + id + ' → ' + next); loadAOrders(); } catch {} finally { hideL(); }
+}
+async function loadAReqs() {
+  try {
+    const reqs = await api('/requests');
+    document.getElementById('RB').innerHTML = reqs.map(r => {
+      const id = r._id||r.id, sc = 'sp-' + (r.status||'').replace(' ','');
+      const budget = (r.budgetMin||r.budgetMax) ? `₹${r.budgetMin||0}–${r.budgetMax||'?'}` : '—';
+      return `<tr><td style="font-family:monospace;font-size:10px">${r.requestNumber||r.id}</td><td>${r.partName}</td><td>${r.brand} ${r.model}</td><td><span class="cond-tag ${r.urgency==='urgent'?'cF':r.urgency==='soon'?'cG':'cN'}" style="position:static">${r.urgency}</span></td><td>${r.contactName}<br><span style="font-size:10px;color:var(--text2)">${r.contactPhone}</span></td><td>${budget}</td><td><span class="sp ${sc}">${r.status}</span></td><td><button class="te" onclick="openRD('${id}')">View</button></td></tr>`;
+    }).join('');
+  } catch {}
+}
+async function openRD(id) {
+  try {
+    const reqs = await api('/requests'); const r = reqs.find(x => (x._id||x.id) === id); if (!r) return;
+    document.getElementById('RDC').innerHTML = `
+      <div class="dg" style="margin-bottom:10px">
+        <div class="dc"><div class="dl">Req ID</div><div class="dv" style="font-family:monospace">${r.requestNumber||r.id}</div></div>
+        <div class="dc"><div class="dl">Status</div><div class="dv">${r.status}</div></div>
+        <div class="dc"><div class="dl">Part</div><div class="dv">${r.partName}</div></div>
+        <div class="dc"><div class="dl">Brand/Model</div><div class="dv">${r.brand} ${r.model}</div></div>
+        <div class="dc"><div class="dl">Urgency</div><div class="dv">${r.urgency}</div></div>
+        <div class="dc"><div class="dl">Budget</div><div class="dv">₹${r.budgetMin||0}–${r.budgetMax||'?'}</div></div>
+        <div class="dc"><div class="dl">Contact</div><div class="dv">${r.contactName}</div></div>
+        <div class="dc"><div class="dl">Phone</div><div class="dv">${r.contactPhone}</div></div>
+        ${r.desc?`<div class="dc" style="grid-column:1/-1"><div class="dl">Description</div><div class="dv" style="font-weight:400">${r.desc}</div></div>`:''}
+      </div>
+      <div class="fld"><label>Update Status</label><select id="RQS"><option>Open</option><option>In Progress</option><option>Quoted</option><option>Closed</option></select></div>
+      <div class="fld"><label>Admin Note</label><textarea id="RQN" placeholder="Add a note...">${r.adminNote||''}</textarea></div>
+      <div class="fld"><label>Quoted Price (₹)</label><input type="number" id="RQP" value="${r.quotedPrice||''}" placeholder="Optional"></div>
+      <button class="btn-save" style="width:100%" onclick="updRD('${id}')">Save Changes</button>`;
+    document.getElementById('RQS').value = r.status;
+    document.getElementById('RDO').classList.add('show');
+  } catch {}
+}
+async function updRD(id) {
+  showL();
+  try { await api('/requests/' + id, { method:'PUT', body:JSON.stringify({ status:document.getElementById('RQS').value, adminNote:document.getElementById('RQN').value, quotedPrice:document.getElementById('RQP').value||undefined }) }); toast('Request updated ✓'); hideRDO(); loadAReqs(); } catch {} finally { hideL(); }
+}
+function closeRDO(e) { if (e.target === document.getElementById('RDO')) hideRDO(); }
+function hideRDO() { document.getElementById('RDO').classList.remove('show'); }
+async function loadRep() {
+  try {
+    const [dash, topP] = await Promise.all([api('/admin/dashboard'), api('/admin/reports/top-parts')]);
+    const s = dash.stats || {};
+    document.getElementById('RS').innerHTML = `<div class="sc"><div class="sl">Revenue</div><div class="sv green" style="font-size:14px">₹${(s.revenue||0).toLocaleString()}</div></div><div class="sc"><div class="sl">Avg Order</div><div class="sv" style="font-size:14px">₹${(s.avgOrderValue||0).toLocaleString()}</div></div><div class="sc"><div class="sl">Orders</div><div class="sv">${s.totalOrders||0}</div></div><div class="sc"><div class="sl">Inventory Value</div><div class="sv" style="font-size:14px">₹${(s.inventoryValue||0).toLocaleString()}</div></div>`;
+    const cats = dash.categoryBreakdown || []; const maxC = Math.max(...cats.map(c=>c.count), 1);
+    document.getElementById('CC').innerHTML = cats.map(c => `<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="font-size:11px;width:80px;flex-shrink:0">${c.category}</div><div style="flex:1;background:var(--border);border-radius:4px;height:14px;overflow:hidden"><div style="width:${Math.round(c.count/maxC*100)}%;height:100%;background:var(--red);border-radius:4px"></div></div><div style="font-size:11px;font-weight:700;width:20px">${c.count}</div></div>`).join('');
+    document.getElementById('AL').innerHTML = (dash.recentOrders||[]).map(o => `<div style="font-size:11px;padding:5px 0;border-bottom:1px solid var(--border);color:var(--text2)">· ${o.orderNumber||o.id} — ₹${(o.total||0).toLocaleString()} — <span class="sp sp-${o.status}">${o.status}</span> — ${(o.createdAt||'').slice(0,10)}</div>`).join('') || '<div style="font-size:12px;color:var(--text2)">No recent orders</div>';
+  } catch {}
+}
+
+// ── INIT ──
+window.addEventListener('DOMContentLoaded', () => {
+  if (user) { document.getElementById('authBtns').style.display='none'; document.getElementById('userBtns').style.display='flex'; document.getElementById('UA').textContent=ini(user.name); }
+  goShop();
+});
+</script>
+</body>
+</html>
