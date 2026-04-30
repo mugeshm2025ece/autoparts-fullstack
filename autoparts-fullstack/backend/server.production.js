@@ -9,7 +9,6 @@ const mongoose   = require('mongoose');
 const path       = require('path');
 
 const app  = express();
-const PORT = process.env.PORT || 3000;
 
 // ─── Security & Performance Middleware ────────────────────────
 app.use(helmet());
@@ -85,10 +84,10 @@ app.use((err, req, res, next) => {
 });
 
 // ─── Start Server ─────────────────────────────────────────────
+const PORT = process.env.PORT || 10000;
+
 app.listen(PORT, () => {
-  console.log(`\n🔧 AutoParts Yard API v2.0`);
-  console.log(`🌐 http://localhost:${PORT}`);
-  console.log(`📦 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`Server running on port ${PORT}`);
 });
 
 module.exports = app;
