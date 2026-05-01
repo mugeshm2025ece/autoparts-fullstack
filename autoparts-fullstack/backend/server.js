@@ -8,8 +8,8 @@ const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 
 const app = express();
-const PORT = 3000;
-const JWT_SECRET = 'autoparts_yard_secret_2026';
+const PORT = process.env.PORT || 3000;
+const JWT_SECRET = process.env.JWT_SECRET || 'autoparts_yard_secret_2026_default_key';
 
 // ─── Middleware ────────────────────────────────────────────────────────────────
 app.use(cors());

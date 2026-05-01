@@ -22,6 +22,7 @@ const connectDB = async () => {
 connectDB();
 
 const app  = express();
+const JWT_SECRET = process.env.JWT_SECRET || 'autoparts_yard_secret_2026_default_key';
 
 // ─── Security & Performance Middleware ────────────────────────
 app.use(helmet());
