@@ -34,7 +34,7 @@ function readDB() {
           id: 'u1',
           name: 'Admin User',
           email: 'admin@autoparts.com',
-          password: bcrypt.hashSync('admin123', 10),
+          password: bcrypt.hashSync('Admin@123!', 10),
           role: 'admin',
           phone: '+91 9000000000',
           createdAt: new Date().toISOString()
@@ -43,7 +43,7 @@ function readDB() {
           id: 'u2',
           name: 'Priya Shankar',
           email: 'customer@test.com',
-          password: bcrypt.hashSync('pass123', 10),
+          password: bcrypt.hashSync('Pass@456#', 10),
           role: 'customer',
           phone: '+91 9876543210',
           createdAt: new Date().toISOString()
@@ -98,6 +98,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } });
 
 // ─── Auth middleware ───────────────────────────────────────────────────────────
+// Note: Passwords support all characters including special chars (!@#$%^&* etc.)
 function authMiddleware(req, res, next) {
   const token = req.headers.authorization?.split(' ')[1];
   if (!token) return res.status(401).json({ error: 'No token provided' });
@@ -527,7 +528,8 @@ app.get('/api/health', (req, res) => {
 app.listen(PORT, () => {
   console.log(`\n🔧 AutoParts Yard Backend running on http://localhost:${PORT}`);
   console.log(`📦 API endpoints ready at http://localhost:${PORT}/api`);
-  console.log(`\nTest credentials:`);
-  console.log(`  Admin  → admin@autoparts.com / admin123`);
-  console.log(`  Customer → customer@test.com / pass123`);
+  console.log(`\nTest credentials (special characters enabled):`);
+  console.log(`  Admin    → admin@autoparts.com / Admin@123!`);
+  console.log(`  Customer → customer@test.com / Pass@456#`);
+  console.log(`\n✅ Passwords support special characters: !@#$%^&*()_+-={}[]|:;<>?,./`);
 });

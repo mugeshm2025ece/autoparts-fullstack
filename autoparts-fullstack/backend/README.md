@@ -13,7 +13,7 @@ npm install
 # Start the server
 node server.js
 
-# Server runs at http://localhost:3000
+# Server runs at http://localhost:300https://autoparts-api-q317.onrender.com/api/parts
 ```
 
 ---

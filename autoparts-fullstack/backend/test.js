@@ -9,7 +9,7 @@
 
 const http = require('http');
 
-const BASE = 'http://localhost:3000';
+const BASE = 'https://autoparts-api-q317.onrender.com/api/parts';
 let adminToken = '';
 let customerToken = '';
 let createdPartId = '';
