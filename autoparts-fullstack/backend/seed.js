@@ -8,10 +8,10 @@ const User = require('./models/User');
 const Part = require('./models/Part');
 const { PromoCode } = require('./models/PartRequest');
 
-const MONGO_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/autoparts';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/autoparts';
 
 const seedUsers = [
-  { name: 'Admin User',    email: 'admin@autoparts.com', password: 'admin123', role: 'admin',    phone: '+91 9000000000' },
+  { name: 'Admin User',    email: 'admin@autoparts.com', password: 'Admin@123!', role: 'admin',    phone: '+91 9000000000' },
   { name: 'Priya Shankar', email: 'customer@test.com',   password: 'pass123',  role: 'customer', phone: '+91 9876543210' },
 ];
 
@@ -60,7 +60,7 @@ async function seed() {
 
   console.log('\n🎉 Database seeded successfully!\n');
   console.log('Test credentials:');
-  console.log('  Admin    → admin@autoparts.com / admin123');
+  console.log('  Admin    → admin@autoparts.com / Admin@123!');
   console.log('  Customer → customer@test.com   / pass123');
   process.exit(0);
 }

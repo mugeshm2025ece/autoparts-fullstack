@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AutoParts Yard</title>
+<title>Muthu auto parts</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--red:#e63946;--dark:#1a1a2e;--green:#27a96c;--amber:#d97706;--bg:#f5f5f3;--card:#fff;--border:#e2e2e0;--text:#1a1a18;--text2:#6b6b68;--text3:#9b9b98;--radius:10px}
@@ -188,7 +188,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;color:var(--text);background:va
 <div class="toast" id="TT"></div>
 
 <div class="topbar">
-  <div class="logo" onclick="goShop()"><div class="logo-icon">⚙</div>AutoParts Yard</div>
+  <div class="logo" onclick="goShop()"><div class="logo-icon">⚙</div>muthu auto parts</div>
   <div class="search-box"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="rgba(255,255,255,.5)" stroke-width="1.5"/><line x1="10.5" y1="10.5" x2="14" y2="14" stroke="rgba(255,255,255,.5)" stroke-width="1.5" stroke-linecap="round"/></svg>
   <input type="text" id="SI" placeholder="Search brand, model, spare part..." oninput="onSearch()"></div>
   <div class="tb-right">
@@ -389,7 +389,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;color:var(--text);background:va
 
 <script>
 // ── CONFIG ── Change this to your deployed backend URL
-const API = 'https://autoparts-api-q317.onrender.com/api';
+const API = 'http://localhost:3000/api';
 
 let parts = [], cart = [], promoDsc = 0, promoC = null;
 let token = localStorage.getItem('ap_token') || null;
@@ -436,7 +436,15 @@ function pimg(p) {
 
 // ── VIEWS ──
 function goShop() { showV('shopView'); loadParts(); }
-function goAdmin() { if (!token || user?.role !== 'admin') { showLogin(); return; } showV('adminView'); loadDash(); aTab('inv', document.querySelector('.tab')); }
+function goAdmin() { 
+  if (!token || !user || user.role !== 'admin') { 
+    showLogin(); 
+    return; 
+  } 
+  showV('adminView'); 
+  loadDash(); 
+  aTab('inv', document.querySelector('.tab')); 
+}
 function goProfile() { if (!user) { showLogin(); return; } document.getElementById('PA').textContent = ini(user.name); document.getElementById('PN').textContent = user.name; document.getElementById('PE').textContent = user.email; showV('profileView'); loadMyOrders(); }
 function goReq() { showV('reqView'); }
 function showLogin() { showV('loginView'); }
@@ -473,7 +481,14 @@ async function doLogin() {
     const b = isReg ? { email: e, password: p, name: document.getElementById('ln').value.trim() || e.split('@')[0], phone: document.getElementById('lph').value.trim() } : { email: e, password: p };
     const d = await api(ep, { method: 'POST', body: JSON.stringify(b) });
     setU(d.user, d.token); toast('Welcome, ' + d.user.name + '! ✓');
-    if (d.user.role === 'admin') goAdmin(); else goShop();
+    // Redirect based on user role
+    setTimeout(() => {
+      if (d.user && d.user.role === 'admin') {
+        goAdmin();
+      } else {
+        goShop();
+      }
+    }, 500);
   } catch (err) { document.getElementById('LE').textContent = err.message; document.getElementById('LE').style.display = 'block'; } finally { hideL(); }
 }
 function doLogout() { clearU(); toast('Logged out'); goShop(); }

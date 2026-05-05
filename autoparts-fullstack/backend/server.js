@@ -151,10 +151,17 @@ app.post('/api/auth/login', (req, res) => {
   if (!user || !bcrypt.compareSync(password, user.password)) {
     return res.status(401).json({ error: 'Invalid email or password' });
   }
+  
+  // Ensure role is set (backward compatibility)
+  if (!user.role) {
+    user.role = user.email === 'admin@autoparts.com' ? 'admin' : 'customer';
+    writeDB(db);
+  }
+  
   const token = jwt.sign({ id: user.id, email: user.email, role: user.role, name: user.name }, JWT_SECRET, { expiresIn: '7d' });
   logActivity(db, `Login: ${user.name} (${user.role})`);
   writeDB(db);
-  res.json({ token, user: { id: user.id, name: user.name, email: user.email, role: user.role, phone: user.phone } });
+  res.json({ token, user: { id: user.id, name: user.name, email: user.email, role: user.role || 'customer', phone: user.phone } });
 });
 
 // GET /api/auth/me
@@ -291,6 +298,102 @@ app.delete('/api/parts/:id/images', authMiddleware, adminOnly, (req, res) => {
   part.images = part.images.filter(img => img !== url);
   writeDB(db);
   res.json({ images: part.images });
+});
+
+// ── ADMIN ROUTES ───────────────────────────────────────────────────────────
+app.get('/api/admin/dashboard', authMiddleware, adminOnly, (req, res) => {
+  try {
+    const db = readDB();
+    const parts = db.parts || [];
+    const orders = db.orders || [];
+    const requests = db.partRequests || [];
+    const users = db.users || [];
+
+    const totalParts = parts.length;
+    const totalStock = parts.reduce((sum, part) => sum + (Number(part.stock) || 0), 0);
+    const inventoryValue = parts.reduce((sum, part) => sum + ((Number(part.price) || 0) * (Number(part.stock) || 0)), 0);
+    const totalOrders = orders.length;
+    const revenue = orders.filter(o => o.status !== 'Cancelled').reduce((sum, order) => sum + (Number(order.total) || 0), 0);
+    const pendingOrders = orders.filter(o => o.status === 'Pending').length;
+    const openRequests = requests.filter(r => r.status === 'Open').length;
+    const totalCustomers = users.filter(u => u.role === 'customer').length;
+
+    const lowStock = parts
+      .filter(part => Number(part.stock) <= 1)
+      .slice(0, 10)
+      .map(({ id, name, brand, model, stock, price }) => ({ id, name, brand, model, stock, price }));
+
+    const categoryBreakdown = Object.values(parts.reduce((acc, part) => {
+      const category = part.category || 'Uncategorized';
+      acc[category] = acc[category] || { category, count: 0 };
+      acc[category].count += 1;
+      return acc;
+    }, {}));
+
+    const ordersByStatus = Object.values(orders.reduce((acc, order) => {
+      const status = order.status || 'Unknown';
+      acc[status] = acc[status] || { status, count: 0 };
+      acc[status].count += 1;
+      return acc;
+    }, {}));
+
+    const recentOrders = [...orders]
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      .slice(0, 8);
+
+    res.json({
+      stats: {
+        totalParts,
+        totalStock,
+        inventoryValue,
+        totalOrders,
+        revenue,
+        avgOrderValue: totalOrders ? Math.round(revenue / totalOrders) : 0,
+        pendingOrders,
+        openRequests,
+        totalCustomers,
+      },
+      lowStock,
+      categoryBreakdown,
+      ordersByStatus,
+      recentOrders,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/admin/reports/top-parts', authMiddleware, adminOnly, (req, res) => {
+  try {
+    const db = readDB();
+    const orders = db.orders || [];
+    const stats = {};
+
+    orders.forEach(order => {
+      (order.items || []).forEach(item => {
+        const key = item.partId || `${item.brand}-${item.name}`;
+        if (!stats[key]) {
+          stats[key] = {
+            partId: item.partId || null,
+            name: item.name,
+            brand: item.brand,
+            totalSold: 0,
+            revenue: 0,
+          };
+        }
+        stats[key].totalSold += Number(item.qty) || 0;
+        stats[key].revenue += (Number(item.price) || 0) * (Number(item.qty) || 0);
+      });
+    });
+
+    const top = Object.values(stats)
+      .sort((a, b) => b.totalSold - a.totalSold)
+      .slice(0, 10);
+
+    res.json(top);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // ═══════════════════════════════════════════════════════════════
