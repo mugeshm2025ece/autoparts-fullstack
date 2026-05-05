@@ -300,6 +300,87 @@ app.delete('/api/parts/:id/images', authMiddleware, adminOnly, (req, res) => {
   res.json({ images: part.images });
 });
 
+// ── ADMIN PARTS ROUTES ──────────────────────────────────────────
+app.post('/api/admin/parts', authMiddleware, adminOnly, (req, res) => {
+  const { name, brand, model, year, category, condition, price, stock, desc, icon } = req.body;
+  if (!name || !brand || !model || !price) return res.status(400).json({ error: 'name, brand, model, price required' });
+
+  const db = readDB();
+  const skuPrefix = brand.slice(0, 2).toUpperCase() + '-' + (category || 'Body').slice(0, 2).toUpperCase();
+  const skuNum = String(db.parts.length + 1).padStart(3, '0');
+
+  const part = {
+    id: uuidv4(),
+    name,
+    brand,
+    model,
+    year: year || '',
+    category: category || 'Body',
+    condition: condition || 'Good',
+    price: Number(price),
+    stock: Number(stock) || 1,
+    desc: desc || '',
+    icon: icon || '🔧',
+    sku: `${skuPrefix}-${skuNum}`,
+    images: [],
+    rating: 0,
+    reviews: 0,
+    createdAt: new Date().toISOString()
+  };
+
+  db.parts.push(part);
+  logActivity(db, `New part added: ${name} (${brand} ${model}) by admin`);
+  writeDB(db);
+  res.status(201).json(part);
+});
+
+app.put('/api/admin/parts/:id', authMiddleware, adminOnly, (req, res) => {
+  const db = readDB();
+  const idx = db.parts.findIndex(p => p.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: 'Part not found' });
+
+  const allowed = ['name', 'brand', 'model', 'year', 'category', 'condition', 'price', 'stock', 'desc', 'icon'];
+  allowed.forEach(k => { if (req.body[k] !== undefined) db.parts[idx][k] = req.body[k]; });
+  if (req.body.price) db.parts[idx].price = Number(req.body.price);
+  if (req.body.stock !== undefined) db.parts[idx].stock = Number(req.body.stock);
+  db.parts[idx].updatedAt = new Date().toISOString();
+
+  logActivity(db, `Part updated: ${db.parts[idx].name}`);
+  writeDB(db);
+  res.json(db.parts[idx]);
+});
+
+app.delete('/api/admin/parts/:id', authMiddleware, adminOnly, (req, res) => {
+  const db = readDB();
+  const part = db.parts.find(p => p.id === req.params.id);
+  if (!part) return res.status(404).json({ error: 'Part not found' });
+  db.parts = db.parts.filter(p => p.id !== req.params.id);
+  logActivity(db, `Part deleted: ${part.name}`);
+  writeDB(db);
+  res.json({ message: 'Deleted successfully' });
+});
+
+app.post('/api/admin/parts/:id/images', authMiddleware, adminOnly, upload.array('images', 10), (req, res) => {
+  const db = readDB();
+  const part = db.parts.find(p => p.id === req.params.id);
+  if (!part) return res.status(404).json({ error: 'Part not found' });
+
+  const urls = req.files.map(f => `/uploads/parts/${f.filename}`);
+  part.images.push(...urls);
+  writeDB(db);
+  res.json({ images: part.images });
+});
+
+app.delete('/api/admin/parts/:id/images', authMiddleware, adminOnly, (req, res) => {
+  const { url } = req.body;
+  const db = readDB();
+  const part = db.parts.find(p => p.id === req.params.id);
+  if (!part) return res.status(404).json({ error: 'Part not found' });
+  part.images = part.images.filter(img => img !== url);
+  writeDB(db);
+  res.json({ images: part.images });
+});
+
 // ── ADMIN ROUTES ───────────────────────────────────────────────────────────
 app.get('/api/admin/dashboard', authMiddleware, adminOnly, (req, res) => {
   try {

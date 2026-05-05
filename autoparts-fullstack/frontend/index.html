@@ -735,9 +735,9 @@ async function savePart() {
   try {
     const body = { name, brand, model, year:document.getElementById('fy').value.trim(), category:document.getElementById('fcat').value, condition:document.getElementById('fco').value, price:Number(price), stock:Number(document.getElementById('fs').value)||1, desc:document.getElementById('fd').value.trim(), icon:document.getElementById('fi').value };
     let part;
-    if (editPId) { part = await api('/parts/' + editPId, { method:'PUT', body:JSON.stringify(body) }); toast('Part updated ✓'); }
-    else { part = await api('/parts', { method:'POST', body:JSON.stringify(body) }); toast('Part added ✓'); }
-    if (adminImgs.length) { const fd = new FormData(); adminImgs.forEach(f => fd.append('images',f)); await apiUp('/parts/' + (part._id||part.id) + '/images', fd); }
+    if (editPId) { part = await api('/admin/parts/' + editPId, { method:'PUT', body:JSON.stringify(body) }); toast('Part updated ✓'); }
+    else { part = await api('/admin/parts', { method:'POST', body:JSON.stringify(body) }); toast('Part added ✓'); }
+    if (adminImgs.length) { const fd = new FormData(); adminImgs.forEach(f => fd.append('images',f)); await apiUp('/admin/parts/' + (part._id||part.id) + '/images', fd); }
     resetPF(); await loadParts(); await loadInv(); aTab('inv', document.querySelectorAll('.tab')[0]);
   } catch {} finally { hideL(); }
 }
@@ -756,7 +756,7 @@ async function editPart(id) {
 async function delPart(id, name) {
   if (!confirm('Delete "' + name + '"?')) return;
   showL();
-  try { await api('/parts/' + id, { method:'DELETE' }); toast('Part deleted'); await loadParts(); await loadInv(); } catch {} finally { hideL(); }
+  try { await api('/admin/parts/' + id, { method:'DELETE' }); toast('Part deleted'); await loadParts(); await loadInv(); } catch {} finally { hideL(); }
 }
 function resetPF() { ['fn','fb','fm','fy','fp','fd'].forEach(id => document.getElementById(id).value=''); document.getElementById('fs').value=1; document.getElementById('fco').value='Good'; document.getElementById('fcat').value='Body'; document.getElementById('fi').value='🔧'; adminImgs=[]; renderTP(); editPId=null; document.getElementById('SPB').textContent='Save Part'; document.getElementById('addErr').style.display='none'; }
 async function loadAOrders() {
