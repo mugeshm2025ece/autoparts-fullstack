@@ -17,6 +17,7 @@ app.use(express.json({ limit: '20mb' }));
 app.use(express.urlencoded({ extended: true, limit: '20mb' }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '../frontend')));
 
 // ─── Ensure folders exist ──────────────────────────────────────────────────────
 ['uploads/parts', 'uploads/requests', 'data'].forEach(dir => {
