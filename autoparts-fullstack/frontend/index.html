@@ -430,7 +430,7 @@ function ini(n) { return (n || '?').split(' ').map(w => w[0]).join('').toUpperCa
 function stars(r) { const n = Math.round(r || 0); return '★'.repeat(n) + '☆'.repeat(5 - n); }
 function cc(c) { return c === 'New' ? 'cN' : c === 'Good' ? 'cG' : 'cF'; }
 function pimg(p) {
-  if (p.images && p.images.length) { const u = p.images[0].url || p.images[0]; return `<img src="${u}" alt="${p.name}" onerror="this.parentNode.innerHTML='<span>${p.icon||'🔧'}</span>'">`; }
+  if (p.images && p.images.length) { const u = API + (p.images[0].url || p.images[0]); return `<img src="${u}" alt="${p.name}" onerror="this.parentNode.innerHTML='<span>${p.icon||'🔧'}</span>'">`; }
   return `<span>${p.icon || '🔧'}</span>`;
 }
 
@@ -561,9 +561,9 @@ async function openD(id) {
     const p = parts.find(x => (x._id||x.id) === id) || await api('/parts/' + id);
     document.getElementById('DT').textContent = p.name;
     const imgs = p.images || [];
-    const main = imgs.length ? (imgs[0].url || imgs[0]) : null;
+    const main = imgs.length ? API + (imgs[0].url || imgs[0]) : null;
     document.getElementById('DI').innerHTML = main ? `<img src="${main}" onerror="this.parentNode.innerHTML='<span style=font-size:52px>${p.icon||'🔧'}</span>'">` : `<span style="font-size:52px">${p.icon||'🔧'}</span>`;
-    document.getElementById('DTH').innerHTML = imgs.length > 1 ? imgs.map((img,i) => { const u = img.url||img; return `<img src="${u}" class="m-thumb ${i===0?'active':''}" onclick="selThumb(this,'${u}')">`; }).join('') : '';
+    document.getElementById('DTH').innerHTML = imgs.length > 1 ? imgs.map((img,i) => { const u = API + (img.url||img); return `<img src="${u}" class="m-thumb ${i===0?'active':''}" onclick="selThumb(this,'${u}')">`; }).join('') : '';
     document.getElementById('DR').innerHTML = `<span style="color:var(--amber);font-size:13px">${stars(p.rating)}</span> <span style="font-size:11px;color:var(--text2)">${p.rating||0} (${p.numReviews||0} reviews)</span>`;
     document.getElementById('DTAG').innerHTML = [p.brand, p.model, p.year, p.category].filter(Boolean).map(t => `<span class="tag">${t}</span>`).join('');
     const st = p.stock !== undefined ? p.stock : '?';
@@ -608,7 +608,7 @@ function updCart() {
   document.getElementById('CB').textContent = cart.reduce((s,c) => s+c.qty, 0);
   document.getElementById('TR').innerHTML = `<div class="tr2"><span>Subtotal</span><span>₹${sub.toLocaleString()}</span></div>${promoDsc?`<div class="tr2"><span class="disc">Promo (${promoC})</span><span class="disc">-₹${promoDsc.toLocaleString()}</span></div>`:''}<div class="tr2"><span>Delivery</span><span style="color:var(--green)">Free</span></div><div class="tr2 bold"><span>Total</span><span>₹${total.toLocaleString()}</span></div>`;
   document.getElementById('CDI').innerHTML = cart.length ? cart.map(c => {
-    const imgSrc = c.images && c.images.length ? (c.images[0].url||c.images[0]) : null;
+    const imgSrc = c.images && c.images.length ? API + (c.images[0].url||c.images[0]) : null;
     const img = imgSrc ? `<img src="${imgSrc}" style="width:100%;height:100%;object-fit:cover">` : `<span style="font-size:16px">${c.icon||'🔧'}</span>`;
     return `<div class="ci"><div class="ci-img">${img}</div><div class="ci-info"><div class="ci-name">${c.name}</div><div class="ci-sub">${c.brand} · ${c.model}</div><div class="qty-row"><button class="qb" onclick="chgQ('${c.id}',-1)">−</button><span class="qv">${c.qty}</span><button class="qb" onclick="chgQ('${c.id}',1)">+</button></div></div><div class="ci-right"><span class="ci-price">₹${(c.price*c.qty).toLocaleString()}</span><button class="ci-rm" onclick="rmCart('${c.id}')">Remove</button></div></div>`;
   }).join('') : '<div class="empty-c">Cart is empty</div>';
@@ -717,7 +717,7 @@ async function loadInv() {
   try {
     const d = await api('/parts?limit=200');
     document.getElementById('IB').innerHTML = (d.parts||[]).map(p => {
-      const id = p._id||p.id, imgSrc = p.images&&p.images.length ? (p.images[0].url||p.images[0]) : null;
+      const id = p._id||p.id, imgSrc = p.images&&p.images.length ? API + (p.images[0].url||p.images[0]) : null;
       const img = imgSrc ? `<img src="${imgSrc}" class="ti">` : `<div class="ti" style="display:flex;align-items:center;justify-content:center">${p.icon||'🔧'}</div>`;
       return `<tr><td>${img}</td><td style="font-weight:600">${p.name}</td><td>${p.brand}</td><td>${p.model}</td><td>${p.category}</td><td>₹${p.price.toLocaleString()}</td><td style="${p.stock<=1?'color:#b91c1c;font-weight:700':''}">${p.stock}</td><td><div class="tf"><button class="te" onclick="editPart('${id}')">Edit</button><button class="td2" onclick="delPart('${id}','${p.name}')">Del</button></div></td></tr>`;
     }).join('');
