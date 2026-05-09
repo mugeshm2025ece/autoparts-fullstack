@@ -394,7 +394,7 @@ const API = 'http://localhost:3000/api';
 let parts = [], cart = [], promoDsc = 0, promoC = null;
 let token = localStorage.getItem('ap_token') || null;
 let user = JSON.parse(localStorage.getItem('ap_user') || 'null');
-let editPId = null, adminImgs = [], urgency = 'flexible', maxP = 60000, isReg = false;
+let editPId = null, adminImgs = [], existingImgs = [], originalImgs = [], urgency = 'flexible', maxP = 60000, isReg = false;
 
 // ── API ──
 async function api(path, opts = {}) {
@@ -724,8 +724,17 @@ async function loadInv() {
   } catch {}
 }
 function handleImgs(e) { Array.from(e.target.files).forEach(f => { adminImgs.push(f); renderTP(); }); e.target.value = ''; }
-function renderTP() { document.getElementById('TP').innerHTML = adminImgs.map((f,i) => `<div class="tw"><img src="${URL.createObjectURL(f)}"><button class="tw-del" onclick="rmAImg(${i})">×</button></div>`).join(''); }
+function renderTP() { 
+  const existing = existingImgs.map((img,i) => `<div class="tw"><img src="${API + (img.url||img)}"><button class="tw-del" onclick="rmEImg('${img.publicId||img._id||i}')">×</button></div>`).join('');
+  const newOnes = adminImgs.map((f,i) => `<div class="tw"><img src="${URL.createObjectURL(f)}"><button class="tw-del" onclick="rmAImg(${i})">×</button></div>`).join('');
+  document.getElementById('TP').innerHTML = existing + newOnes;
+}
 function rmAImg(i) { adminImgs.splice(i,1); renderTP(); }
+function rmEImg(publicId) { 
+  const idx = existingImgs.findIndex(img => (img.publicId || img._id || img) === publicId);
+  if (idx > -1) existingImgs.splice(idx, 1);
+  renderTP();
+}
 async function savePart() {
   const name = document.getElementById('fn').value.trim(), brand = document.getElementById('fb').value.trim();
   const model = document.getElementById('fm').value.trim(), price = document.getElementById('fp').value;
@@ -735,7 +744,15 @@ async function savePart() {
   try {
     const body = { name, brand, model, year:document.getElementById('fy').value.trim(), category:document.getElementById('fcat').value, condition:document.getElementById('fco').value, price:Number(price), stock:Number(document.getElementById('fs').value)||1, desc:document.getElementById('fd').value.trim(), icon:document.getElementById('fi').value };
     let part;
-    if (editPId) { part = await api('/admin/parts/' + editPId, { method:'PUT', body:JSON.stringify(body) }); toast('Part updated ✓'); }
+    if (editPId) { 
+      part = await api('/admin/parts/' + editPId, { method:'PUT', body:JSON.stringify(body) }); 
+      // Delete removed images
+      const toDelete = originalImgs.filter(orig => !existingImgs.some(ex => ex.publicId === orig.publicId));
+      for (const img of toDelete) {
+        if (img.publicId) await api('/admin/parts/' + editPId + '/images/' + encodeURIComponent(img.publicId), { method:'DELETE' });
+      }
+      toast('Part updated ✓'); 
+    }
     else { part = await api('/admin/parts', { method:'POST', body:JSON.stringify(body) }); toast('Part added ✓'); }
     if (adminImgs.length) { const fd = new FormData(); adminImgs.forEach(f => fd.append('images',f)); await apiUp('/admin/parts/' + (part._id||part.id) + '/images', fd); }
     resetPF(); await loadParts(); await loadInv(); aTab('inv', document.querySelectorAll('.tab')[0]);
@@ -743,7 +760,7 @@ async function savePart() {
 }
 async function editPart(id) {
   try {
-    const p = await api('/parts/' + id); editPId = id; adminImgs = [];
+    const p = await api('/parts/' + id); editPId = id; adminImgs = []; existingImgs = [...(p.images || [])]; originalImgs = [...(p.images || [])];
     document.getElementById('fn').value = p.name; document.getElementById('fcat').value = p.category;
     document.getElementById('fb').value = p.brand; document.getElementById('fm').value = p.model;
     document.getElementById('fy').value = p.year||''; document.getElementById('fp').value = p.price;
@@ -758,7 +775,7 @@ async function delPart(id, name) {
   showL();
   try { await api('/admin/parts/' + id, { method:'DELETE' }); toast('Part deleted'); await loadParts(); await loadInv(); } catch {} finally { hideL(); }
 }
-function resetPF() { ['fn','fb','fm','fy','fp','fd'].forEach(id => document.getElementById(id).value=''); document.getElementById('fs').value=1; document.getElementById('fco').value='Good'; document.getElementById('fcat').value='Body'; document.getElementById('fi').value='🔧'; adminImgs=[]; renderTP(); editPId=null; document.getElementById('SPB').textContent='Save Part'; document.getElementById('addErr').style.display='none'; }
+function resetPF() { ['fn','fb','fm','fy','fp','fd'].forEach(id => document.getElementById(id).value=''); document.getElementById('fs').value=1; document.getElementById('fco').value='Good'; document.getElementById('fcat').value='Body'; document.getElementById('fi').value='🔧'; adminImgs=[]; existingImgs=[]; originalImgs=[]; renderTP(); editPId=null; document.getElementById('SPB').textContent='Save Part'; document.getElementById('addErr').style.display='none'; }
 async function loadAOrders() {
   try {
     const orders = await api('/orders');
