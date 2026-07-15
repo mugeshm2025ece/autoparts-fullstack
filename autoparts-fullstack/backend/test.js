@@ -71,14 +71,14 @@ async function testAuth() {
   console.log('\n🔐 Auth Routes');
 
   // Admin login
-  let r = await req('POST', '/api/auth/login', { email: 'admin@autoparts.com', password: 'admin123' });
+  let r = await req('POST', '/api/auth/login', { email: 'admin@autoparts.com', password: 'Admin@123!' });
   assert('Admin login returns 200', r.status === 200, JSON.stringify(r.body));
   assert('Admin login returns token', !!r.body.token);
   assert('Admin role is admin', r.body.user?.role === 'admin');
   adminToken = r.body.token;
 
   // Customer login
-  r = await req('POST', '/api/auth/login', { email: 'customer@test.com', password: 'pass123' });
+  r = await req('POST', '/api/auth/login', { email: 'customer@test.com', password: 'Pass@456#' });
   assert('Customer login returns 200', r.status === 200);
   assert('Customer login returns token', !!r.body.token);
   assert('Customer role is customer', r.body.user?.role === 'customer');
@@ -280,9 +280,9 @@ async function testAdminDashboard() {
   let r = await req('GET', '/api/admin/dashboard', null, adminToken);
   assert('GET /api/admin/dashboard returns 200', r.status === 200);
   assert('Dashboard has stats', !!r.body.stats);
-  assert('Stats has totalParts', typeof r.body.stats.totalParts === 'number');
-  assert('Stats has revenue', typeof r.body.stats.revenue === 'number');
-  assert('Stats has totalOrders', typeof r.body.stats.totalOrders === 'number');
+  assert('Stats has totalParts', typeof r.body.stats?.totalParts === 'number');
+  assert('Stats has revenue', typeof r.body.stats?.revenue === 'number');
+  assert('Stats has totalOrders', typeof r.body.stats?.totalOrders === 'number');
   assert('Has lowStock array', Array.isArray(r.body.lowStock));
   assert('Has categoryBreakdown', Array.isArray(r.body.categoryBreakdown));
   assert('Has recentOrders', Array.isArray(r.body.recentOrders));

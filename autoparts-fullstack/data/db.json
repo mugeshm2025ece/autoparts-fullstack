@@ -1,0 +1,372 @@
+{
+  "users": [
+    {
+      "id": "u1",
+      "name": "Admin User",
+      "email": "admin@autoparts.com",
+      "password": "$2a$10$FRRSKOFJt1WImgX2IKOAIeaRqJ72YXcJDTDW8feml2sWRtycLY3B2",
+      "role": "admin",
+      "phone": "+91 9000000000",
+      "createdAt": "2026-05-22T15:16:36.586Z"
+    },
+    {
+      "id": "u2",
+      "name": "Priya Shankar",
+      "email": "customer@test.com",
+      "password": "$2a$10$Gv/vNmEmv5UGJHi3zsoQr.zNBeShSrpTN5GUWiqwLQEYXcfxdwKM.",
+      "role": "customer",
+      "phone": "+91 9876543210",
+      "createdAt": "2026-05-22T15:16:36.652Z"
+    },
+    {
+      "id": "6c04e529-7fbe-4a4f-82d2-697993d61973",
+      "name": "Test User",
+      "email": "test1779462996877@test.com",
+      "password": "$2a$10$ySDVEoULZud322ndwNUOTOkZOkN8q/Js.u/qPIyHvtbW407zbxtqy",
+      "role": "customer",
+      "phone": "+91 9999999999",
+      "createdAt": "2026-05-22T15:16:36.948Z"
+    },
+    {
+      "id": "e9095a26-2131-4b39-a62e-3f74bd318941",
+      "name": "Test User",
+      "email": "test1779463029375@test.com",
+      "password": "$2a$10$h/L7ILdhG03FucObUASJOuAd6SwrTyKhSnZEwq.HSf/oS8Gf5Z2rG",
+      "role": "customer",
+      "phone": "+91 9999999999",
+      "createdAt": "2026-05-22T15:17:09.452Z"
+    },
+    {
+      "id": "da8a470e-3f60-48f8-bf34-635b5d094f6e",
+      "name": "mugesh",
+      "email": "mugeshofficial2007@gmail.com",
+      "password": "$2a$10$zD3sWngE6fYYnz7bwXUBLu6Zsz6sbuXXqVpso.lXMndyYhQQkglUi",
+      "role": "customer",
+      "phone": "9361389677",
+      "createdAt": "2026-05-22T15:21:22.464Z"
+    }
+  ],
+  "parts": [
+    {
+      "id": "p1",
+      "name": "Front Bumper Assembly",
+      "brand": "Maruti Suzuki",
+      "model": "Swift",
+      "year": "2018-2022",
+      "category": "Body",
+      "condition": "Good",
+      "price": 2800,
+      "stock": 1,
+      "desc": "Good condition, minor scuffs on lower edge",
+      "icon": "🚗",
+      "sku": "MS-FB-001",
+      "images": [],
+      "rating": 4.2,
+      "reviews": 14,
+      "createdAt": "2026-05-22T15:16:36.652Z"
+    },
+    {
+      "id": "p2",
+      "name": "Radiator",
+      "brand": "Hyundai",
+      "model": "i20",
+      "year": "2016-2020",
+      "category": "Engine",
+      "condition": "Good",
+      "price": 3500,
+      "stock": 1,
+      "desc": "No leaks, pressure tested",
+      "icon": "⚙️",
+      "sku": "HY-RAD-002",
+      "images": [],
+      "rating": 4.5,
+      "reviews": 9,
+      "createdAt": "2026-05-22T15:16:36.652Z"
+    },
+    {
+      "id": "p3",
+      "name": "Front Left Door",
+      "brand": "Toyota",
+      "model": "Innova",
+      "year": "2015-2019",
+      "category": "Body",
+      "condition": "Fair",
+      "price": 5500,
+      "stock": 1,
+      "desc": "Minor dents on lower panel, glass intact",
+      "icon": "🚪",
+      "sku": "TY-DR-003",
+      "images": [],
+      "rating": 3.8,
+      "reviews": 5,
+      "createdAt": "2026-05-22T15:16:36.652Z"
+    },
+    {
+      "id": "p4",
+      "name": "Alternator 80A",
+      "brand": "Honda",
+      "model": "City",
+      "year": "2017-2021",
+      "category": "Electrical",
+      "condition": "Good",
+      "price": 4200,
+      "stock": 3,
+      "desc": "Output tested 14.2V — normal",
+      "icon": "⚡",
+      "sku": "HN-ALT-004",
+      "images": [],
+      "rating": 4.7,
+      "reviews": 22,
+      "createdAt": "2026-05-22T15:16:36.652Z"
+    },
+    {
+      "id": "p5",
+      "name": "Gearbox 5-Speed",
+      "brand": "Tata",
+      "model": "Nexon",
+      "year": "2019-2023",
+      "category": "Transmission",
+      "condition": "Good",
+      "price": 18000,
+      "stock": 1,
+      "desc": "Smooth shifting, no grinding",
+      "icon": "🔧",
+      "sku": "TA-GB-005",
+      "images": [],
+      "rating": 4.3,
+      "reviews": 7,
+      "createdAt": "2026-05-22T15:16:36.652Z"
+    },
+    {
+      "id": "p6",
+      "name": "Headlight RHS",
+      "brand": "Maruti Suzuki",
+      "model": "Baleno",
+      "year": "2019-2023",
+      "category": "Electrical",
+      "condition": "New",
+      "price": 2200,
+      "stock": 4,
+      "desc": "New old stock, unused",
+      "icon": "💡",
+      "sku": "MS-HL-006",
+      "images": [],
+      "rating": 4.9,
+      "reviews": 31,
+      "createdAt": "2026-05-22T15:16:36.652Z"
+    },
+    {
+      "id": "p7",
+      "name": "AC Compressor",
+      "brand": "Hyundai",
+      "model": "Creta",
+      "year": "2020-2023",
+      "category": "AC",
+      "condition": "Good",
+      "price": 7500,
+      "stock": 1,
+      "desc": "Cooling tested OK, no noise",
+      "icon": "❄️",
+      "sku": "HY-AC-007",
+      "images": [],
+      "rating": 4.1,
+      "reviews": 11,
+      "createdAt": "2026-05-22T15:16:36.652Z"
+    },
+    {
+      "id": "p8",
+      "name": "Brake Caliper Set",
+      "brand": "Maruti Suzuki",
+      "model": "Ertiga",
+      "year": "2018-2022",
+      "category": "Brakes",
+      "condition": "Good",
+      "price": 1800,
+      "stock": 3,
+      "desc": "Piston moves freely, seals good",
+      "icon": "🛑",
+      "sku": "MS-BC-008",
+      "images": [],
+      "rating": 4.6,
+      "reviews": 18,
+      "createdAt": "2026-05-22T15:16:36.652Z"
+    }
+  ],
+  "orders": [
+    {
+      "id": "ORD-001",
+      "userId": "u2",
+      "customerName": "Priya Shankar",
+      "customerEmail": "customer@test.com",
+      "customerPhone": "+91 9876543210",
+      "items": [
+        {
+          "partId": "p4",
+          "name": "Alternator 80A",
+          "brand": "Honda",
+          "model": "City",
+          "price": 4200,
+          "qty": 1
+        }
+      ],
+      "subtotal": 4200,
+      "discount": 0,
+      "total": 4200,
+      "paymentMethod": "UPI",
+      "paymentStatus": "Paid",
+      "status": "Shipped",
+      "promoCode": null,
+      "address": "42, Anna Nagar, Chennai - 600040",
+      "createdAt": "2026-04-22T10:00:00Z",
+      "updatedAt": "2026-04-23T08:00:00Z"
+    },
+    {
+      "id": "ORD-002",
+      "userId": "u2",
+      "customerName": "Priya Shankar",
+      "customerEmail": "customer@test.com",
+      "customerPhone": "+91 9876543210",
+      "items": [
+        {
+          "partId": "p1",
+          "name": "Front Bumper Assembly",
+          "brand": "Maruti Suzuki",
+          "model": "Swift",
+          "price": 2800,
+          "qty": 1
+        }
+      ],
+      "subtotal": 2800,
+      "discount": 280,
+      "total": 2520,
+      "paymentMethod": "COD",
+      "paymentStatus": "Pending",
+      "status": "Processing",
+      "promoCode": "YARD10",
+      "address": "42, Test Street, Chennai - 600001",
+      "createdAt": "2026-05-22T15:17:09.491Z",
+      "updatedAt": "2026-05-22T15:17:09.514Z"
+    }
+  ],
+  "partRequests": [
+    {
+      "id": "REQ-0001",
+      "brand": "Maruti Suzuki",
+      "model": "WagonR",
+      "year": "2021",
+      "partName": "Left side mirror",
+      "category": "Body",
+      "urgency": "soon",
+      "budgetMin": 500,
+      "budgetMax": 1500,
+      "desc": "",
+      "contactName": "Ravi Kumar",
+      "contactPhone": "+91 9876543210",
+      "contactEmail": "ravi@email.com",
+      "contactMethod": "WhatsApp",
+      "photos": [],
+      "status": "Open",
+      "adminNote": "",
+      "createdAt": "2026-05-22T15:16:36.989Z"
+    },
+    {
+      "id": "REQ-0002",
+      "brand": "Maruti Suzuki",
+      "model": "WagonR",
+      "year": "2021",
+      "partName": "Left side mirror",
+      "category": "Body",
+      "urgency": "soon",
+      "budgetMin": 500,
+      "budgetMax": 1500,
+      "desc": "",
+      "contactName": "Ravi Kumar",
+      "contactPhone": "+91 9876543210",
+      "contactEmail": "ravi@email.com",
+      "contactMethod": "WhatsApp",
+      "photos": [],
+      "status": "In Progress",
+      "adminNote": "Checking our network",
+      "createdAt": "2026-05-22T15:17:09.516Z",
+      "updatedAt": "2026-05-22T15:17:09.525Z"
+    }
+  ],
+  "promoCodes": [
+    {
+      "code": "YARD10",
+      "discount": 10,
+      "type": "percent",
+      "active": true
+    },
+    {
+      "code": "FIRST20",
+      "discount": 20,
+      "type": "percent",
+      "active": true
+    },
+    {
+      "code": "FLAT500",
+      "discount": 500,
+      "type": "flat",
+      "active": true
+    }
+  ],
+  "activityLog": [
+    {
+      "msg": "Login: Priya Shankar (customer)",
+      "time": "2026-05-22T15:23:04.508Z"
+    },
+    {
+      "msg": "Login: Priya Shankar (customer)",
+      "time": "2026-05-22T15:22:50.448Z"
+    },
+    {
+      "msg": "New customer registered: mugesh (mugeshofficial2007@gmail.com)",
+      "time": "2026-05-22T15:21:22.464Z"
+    },
+    {
+      "msg": "Part deleted: Test Wiper Motor",
+      "time": "2026-05-22T15:17:09.549Z"
+    },
+    {
+      "msg": "Part request REQ-0002: Left side mirror for Maruti Suzuki WagonR",
+      "time": "2026-05-22T15:17:09.516Z"
+    },
+    {
+      "msg": "Order ORD-002 → Processing",
+      "time": "2026-05-22T15:17:09.514Z"
+    },
+    {
+      "msg": "New order ORD-002 — ₹2520 by Priya Shankar via COD",
+      "time": "2026-05-22T15:17:09.491Z"
+    },
+    {
+      "msg": "Part updated: Test Wiper Motor",
+      "time": "2026-05-22T15:17:09.478Z"
+    },
+    {
+      "msg": "New part added: Test Wiper Motor (Test Brand TestCar) by admin",
+      "time": "2026-05-22T15:17:09.472Z"
+    },
+    {
+      "msg": "New customer registered: Test User (test1779463029375@test.com)",
+      "time": "2026-05-22T15:17:09.452Z"
+    },
+    {
+      "msg": "Login: Priya Shankar (customer)",
+      "time": "2026-05-22T15:17:09.299Z"
+    },
+    {
+      "msg": "Login: Admin User (admin)",
+      "time": "2026-05-22T15:17:09.193Z"
+    },
+    {
+      "msg": "Part request REQ-0001: Left side mirror for Maruti Suzuki WagonR",
+      "time": "2026-05-22T15:16:36.989Z"
+    },
+    {
+      "msg": "New customer registered: Test User (test1779462996877@test.com)",
+      "time": "2026-05-22T15:16:36.948Z"
+    }
+  ]
+}

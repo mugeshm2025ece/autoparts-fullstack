@@ -141,7 +141,7 @@ app.post('/api/auth/register', (req, res) => {
   writeDB(db);
 
   const token = jwt.sign({ id: user.id, email: user.email, role: user.role, name: user.name }, JWT_SECRET, { expiresIn: '7d' });
-  res.json({ token, user: { id: user.id, name: user.name, email: user.email, role: user.role, phone: user.phone } });
+  res.status(201).json({ token, user: { id: user.id, name: user.name, email: user.email, role: user.role, phone: user.phone } });
 });
 
 // POST /api/auth/login
@@ -484,11 +484,17 @@ app.get('/api/admin/reports/top-parts', authMiddleware, adminOnly, (req, res) =>
 
 // POST /api/orders/validate-promo
 app.post('/api/orders/validate-promo', (req, res) => {
-  const { code } = req.body;
+  const { code, subtotal } = req.body;
   const db = readDB();
   const promo = db.promoCodes.find(p => p.code === code?.toUpperCase() && p.active);
   if (!promo) return res.status(404).json({ error: 'Invalid or expired promo code' });
-  res.json({ code: promo.code, discount: promo.discount, type: promo.type });
+  
+  let discountAmount = promo.discount;
+  if (subtotal && promo.type === 'percent') {
+    discountAmount = Math.round(Number(subtotal) * promo.discount / 100);
+  }
+  
+  res.json({ code: promo.code, discount: discountAmount, type: promo.type });
 });
 
 // POST /api/orders  (authenticated customers)
