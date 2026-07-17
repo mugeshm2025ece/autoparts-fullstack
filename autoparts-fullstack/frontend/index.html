@@ -33,22 +33,22 @@
 
 :root {
   --red: #ff335f;
-  --red-glow: rgba(255, 51, 95, 0.35);
-  --dark: #070913;
-  --dark-glass: rgba(13, 17, 33, 0.7);
-  --green: #00e676;
-  --green-glow: rgba(0, 230, 118, 0.25);
-  --amber: #ffb300;
-  --bg: #04060d;
-  --card: rgba(16, 22, 42, 0.65);
-  --border: rgba(255, 255, 255, 0.08);
-  --text: #f3f4f6;
-  --text2: #9ca3af;
-  --text3: #6b7280;
+  --red-glow: rgba(255, 51, 95, 0.18);
+  --dark: #ffffff;
+  --dark-glass: rgba(255, 255, 255, 0.88);
+  --green: #16a34a;
+  --green-glow: rgba(22, 163, 74, 0.16);
+  --amber: #d97706;
+  --bg: #f8fafc;
+  --card: rgba(255, 255, 255, 0.95);
+  --border: rgba(15, 23, 42, 0.08);
+  --text: #0f172a;
+  --text2: #475569;
+  --text3: #64748b;
   --radius: 16px;
   --radius-sm: 8px;
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+  --shadow: 0 8px 24px 0 rgba(15, 23, 42, 0.08);
 }
 
 body {
@@ -58,14 +58,14 @@ body {
   font-size: 14px;
   background-image: 
     radial-gradient(circle at 10% 20%, rgba(255, 51, 95, 0.04) 0%, transparent 40%),
-    radial-gradient(circle at 90% 80%, rgba(0, 230, 118, 0.03) 0%, transparent 45%);
+    radial-gradient(circle at 90% 80%, rgba(22, 163, 74, 0.05) 0%, transparent 45%);
   background-attachment: fixed;
   overflow-x: hidden;
 }
 
 /* Topbar */
 .topbar {
-  background: rgba(7, 9, 19, 0.75);
+  background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border);
@@ -77,7 +77,7 @@ body {
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
 }
 
 .logo {
@@ -86,7 +86,7 @@ body {
   gap: 10px;
   font-size: 18px;
   font-weight: 800;
-  color: #fff;
+  color: var(--text);
   cursor: pointer;
   white-space: nowrap;
   letter-spacing: 0.5px;
@@ -111,7 +111,7 @@ body {
   max-width: 440px;
   display: flex;
   align-items: center;
-  background: rgba(255, 255, 255, 0.04);
+  background: #fff;
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 0 14px;
@@ -130,14 +130,14 @@ body {
   background: none;
   border: none;
   outline: none;
-  color: #fff;
+  color: var(--text);
   font-size: 13px;
   width: 100%;
   font-family: inherit;
 }
 
 .search-box input::placeholder {
-  color: rgba(255, 255, 255, 0.35);
+  color: var(--text3);
 }
 
 .tb-right {
