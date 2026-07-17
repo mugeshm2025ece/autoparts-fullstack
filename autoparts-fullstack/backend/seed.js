@@ -8,7 +8,7 @@ const User = require('./models/User');
 const Part = require('./models/Part');
 const { PromoCode } = require('./models/PartRequest');
 
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/autoparts';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/autoparts';
 
 const seedUsers = [
   { name: 'Admin User',    email: 'admin@autoparts.com', password: 'Admin@123!', role: 'admin',    phone: '+91 9000000000' },

@@ -1918,8 +1918,11 @@ body {
 </div>
 
 <script>
-// ── CONFIG ── Change this to your deployed backend URL
-const API = 'http://localhost:3000/api';
+// ── CONFIG ── Use the local backend in development and the Render backend in production
+const isLocalDev = ['127.0.0.1', '0.0.0.0', '[::1]'].includes(window.location.hostname);
+const API = isLocalDev
+  ? 'http://127.0.0.1:3000/api'
+  : 'https://autoparts-api-q317.onrender.com/api';
 
 let parts = [], cart = [], promoDsc = 0, promoC = null;
 let token = localStorage.getItem('ap_token') || null;

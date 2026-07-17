@@ -10,9 +10,17 @@ const { v4: uuidv4 } = require('uuid');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'autoparts_yard_secret_2026_default_key';
+const allowedOrigins = [process.env.CLIENT_URL, 'http://127.0.0.1:3000', 'http://0.0.0.0:3000', 'http://127.0.0.1:5173'].filter(Boolean);
 
 // ─── Middleware ────────────────────────────────────────────────────────────────
-app.use(cors());
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+    callback(null, false);
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json({ limit: '20mb' }));
 app.use(express.urlencoded({ extended: true, limit: '20mb' }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -717,8 +725,8 @@ app.get('/api/health', (req, res) => {
 
 // ─── Start ─────────────────────────────────────────────────────────────────────
 app.listen(PORT, () => {
-  console.log(`\n🔧 AutoParts Yard Backend running on http://localhost:${PORT}`);
-  console.log(`📦 API endpoints ready at http://localhost:${PORT}/api`);
+  console.log(`\n🔧 AutoParts Yard Backend running on port ${PORT}`);
+  console.log(`📦 API endpoints ready at /api`);
   console.log(`\nTest credentials (special characters enabled):`);
   console.log(`  Admin    → admin@autoparts.com / Admin@123!`);
   console.log(`  Customer → customer@test.com / Pass@456#`);

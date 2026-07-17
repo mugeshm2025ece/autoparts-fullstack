@@ -9,6 +9,8 @@
 
 const http = require('http');
 
+const API_HOST = process.env.API_HOST || '127.0.0.1';
+const API_PORT = Number(process.env.API_PORT || 3000);
 const BASE = 'https://autoparts-api-q317.onrender.com/api/parts';
 let adminToken = '';
 let customerToken = '';
@@ -23,8 +25,8 @@ function req(method, path, body, token) {
   return new Promise((resolve, reject) => {
     const payload = body ? JSON.stringify(body) : null;
     const options = {
-      hostname: 'localhost',
-      port: 3000,
+      hostname: API_HOST,
+      port: API_PORT,
       path,
       method,
       headers: {
