@@ -10,7 +10,7 @@ const { v4: uuidv4 } = require('uuid');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'autoparts_yard_secret_2026_default_key';
-const allowedOrigins = [process.env.CLIENT_URL, 'http://127.0.0.1:3000', 'http://0.0.0.0:3000', 'http://127.0.0.1:5173'].filter(Boolean);
+const allowedOrigins = [process.env.CLIENT_URL, 'http://127.0.0.1:3000', 'http://localhost:3000', 'http://0.0.0.0:3000', 'http://127.0.0.1:5173', 'http://localhost:5173', 'http://localhost:8000'].filter(Boolean);
 
 // ─── Middleware ────────────────────────────────────────────────────────────────
 app.use(cors({
@@ -28,12 +28,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, '../frontend')));
 
 // ─── Ensure folders exist ──────────────────────────────────────────────────────
-['uploads/parts', 'uploads/requests', 'data'].forEach(dir => {
+['uploads/parts', 'uploads/requests', path.join(__dirname, 'data')].forEach(dir => {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 });
 
 // ─── JSON "Database" (lowdb-style flat files) ──────────────────────────────────
-const DB_PATH = './data/db.json';
+const DB_PATH = path.join(__dirname, 'data', 'db.json');
 
 function readDB() {
   if (!fs.existsSync(DB_PATH)) {

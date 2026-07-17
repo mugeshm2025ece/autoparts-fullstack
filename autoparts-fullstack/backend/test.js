@@ -8,6 +8,7 @@
  */
 
 const fs = require('fs');
+const path = require('path');
 const http = require('http');
 
 const API_HOST = process.env.API_HOST || '127.0.0.1';
@@ -74,7 +75,7 @@ async function testAuth() {
   console.log('\n🔐 Auth Routes');
 
   // Regression: if the stored admin account is marked as a customer, login should still restore the admin role
-  const dbPath = './data/db.json';
+  const dbPath = path.join(__dirname, 'data', 'db.json');
   const db = JSON.parse(fs.readFileSync(dbPath, 'utf8'));
   const adminUser = db.users.find(u => u.email === 'admin@autoparts.com');
   if (adminUser) adminUser.role = 'customer';

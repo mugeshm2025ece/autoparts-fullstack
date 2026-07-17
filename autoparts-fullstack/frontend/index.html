@@ -1927,7 +1927,7 @@ body {
 
 <script>
 // ── CONFIG ── Use the local backend in development and the Render backend in production
-const isLocalDev = ['127.0.0.1', '0.0.0.0', '[::1]'].includes(window.location.hostname);
+const isLocalDev = ['127.0.0.1', 'localhost', '0.0.0.0', '[::1]'].includes(window.location.hostname);
 const API = isLocalDev
   ? 'http://127.0.0.1:3000/api'
   : 'https://autoparts-api-q317.onrender.com/api';

@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 
-const DB_PATH = './data/db.json';
+const DB_PATH = path.join(__dirname, 'data', 'db.json');
 
 function createInitialDB() {
   const initial = {
