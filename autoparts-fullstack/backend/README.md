@@ -23,8 +23,8 @@ https://autoparts-api-q317.onrender.com/api
 
 | Role     | Email                   | Password   |
 |----------|-------------------------|------------|
-| Admin    | admin@autoparts.com     | admin123   |
-| Customer | customer@test.com       | pass123    |
+| Admin    | admin@autoparts.com     | Admin@123! |
+| Customer | customer@test.com       | Pass@456#  |
 
 ---
 
@@ -62,7 +62,7 @@ Authorization: Bearer <token>
 
 **Login body:**
 ```json
-{ "email": "admin@autoparts.com", "password": "admin123" }
+{ "email": "admin@autoparts.com", "password": "Admin@123!" }
 ```
 
 **Login response:**

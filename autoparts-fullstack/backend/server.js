@@ -161,16 +161,18 @@ app.post('/api/auth/login', (req, res) => {
     return res.status(401).json({ error: 'Invalid email or password' });
   }
   
-  // Ensure role is set (backward compatibility)
-  if (!user.role) {
-    user.role = user.email === 'admin@autoparts.com' ? 'admin' : 'customer';
+  // Ensure the seeded admin account always resolves to the admin role
+  const isAdminEmail = user.email === 'admin@autoparts.com';
+  if (!user.role || (isAdminEmail && user.role !== 'admin')) {
+    user.role = isAdminEmail ? 'admin' : 'customer';
     writeDB(db);
   }
   
-  const token = jwt.sign({ id: user.id, email: user.email, role: user.role, name: user.name }, JWT_SECRET, { expiresIn: '7d' });
-  logActivity(db, `Login: ${user.name} (${user.role})`);
+  const role = user.role || (isAdminEmail ? 'admin' : 'customer');
+  const token = jwt.sign({ id: user.id, email: user.email, role, name: user.name }, JWT_SECRET, { expiresIn: '7d' });
+  logActivity(db, `Login: ${user.name} (${role})`);
   writeDB(db);
-  res.json({ token, user: { id: user.id, name: user.name, email: user.email, role: user.role || 'customer', phone: user.phone } });
+  res.json({ token, user: { id: user.id, name: user.name, email: user.email, role, phone: user.phone } });
 });
 
 // GET /api/auth/me
