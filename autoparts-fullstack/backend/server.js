@@ -10,12 +10,21 @@ const { v4: uuidv4 } = require('uuid');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'autoparts_yard_secret_2026_default_key';
-const allowedOrigins = [process.env.CLIENT_URL, 'http://127.0.0.1:3000', 'http://localhost:3000', 'http://0.0.0.0:3000', 'http://127.0.0.1:5173', 'http://localhost:5173', 'http://localhost:8000'].filter(Boolean);
+const allowedOrigins = [process.env.CLIENT_URL, 'http://127.0.0.1:3000', 'http://localhost:3000', 'http://0.0.0.0:3000', 'http://127.0.0.1:5173', 'http://localhost:5173', 'http://127.0.0.1:8000', 'http://localhost:8000'].filter(Boolean);
 
 // ─── Middleware ────────────────────────────────────────────────────────────────
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+    if (!origin) return callback(null, true);
+
+    try {
+      const hostname = new URL(origin).hostname;
+      const isLocalHost = ['localhost', '127.0.0.1', '0.0.0.0', '::1'].includes(hostname);
+      if (allowedOrigins.includes(origin) || isLocalHost) return callback(null, true);
+    } catch {
+      // fall through to reject invalid origins
+    }
+
     callback(null, false);
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
