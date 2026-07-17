@@ -220,23 +220,24 @@ body {
 }
 
 .sidebar {
-  width: 240px;
-  background: rgba(10, 14, 27, 0.5);
+  width: 260px;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
   border-right: 1px solid var(--border);
-  padding: 1.5rem;
+  padding: 1.25rem 1rem;
   flex-shrink: 0;
   overflow-y: auto;
+  box-shadow: inset -1px 0 0 rgba(15, 23, 42, 0.03);
 }
 
 .sb-title {
   font-size: 11px;
   font-weight: 700;
-  color: var(--text3);
+  color: #0f172a;
   text-transform: uppercase;
   letter-spacing: 1px;
   margin: 20px 0 10px;
   padding-top: 15px;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
 }
 
 .sb-title:first-child {
@@ -249,14 +250,21 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 6px 0;
+  padding: 8px 10px;
+  margin-bottom: 6px;
   font-size: 13px;
   color: var(--text2);
+  background: #fff;
+  border: 1px solid transparent;
+  border-radius: 10px;
   transition: var(--transition);
 }
 
 .fr:hover {
-  color: #fff;
+  color: var(--red);
+  background: #fff5f7;
+  border-color: rgba(255, 51, 95, 0.16);
+  transform: translateX(2px);
 }
 
 .fr input[type=checkbox] {
