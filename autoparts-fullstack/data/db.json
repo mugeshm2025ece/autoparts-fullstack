@@ -44,6 +44,15 @@
       "role": "customer",
       "phone": "9361389677",
       "createdAt": "2026-05-22T15:21:22.464Z"
+    },
+    {
+      "id": "50c24d8d-eb24-4f97-b404-330d96e28fb4",
+      "name": "Test User",
+      "email": "test1784295528728@test.com",
+      "password": "$2a$10$5OHau2PTyjh2SBn3lzf5NOG8bR8.uJ9oNp5UN0Hl3zxhiIUGWfpvS",
+      "role": "customer",
+      "phone": "+91 9999999999",
+      "createdAt": "2026-07-17T13:38:48.950Z"
     }
   ],
   "parts": [
@@ -56,7 +65,7 @@
       "category": "Body",
       "condition": "Good",
       "price": 2800,
-      "stock": 1,
+      "stock": 0,
       "desc": "Good condition, minor scuffs on lower edge",
       "icon": "🚗",
       "sku": "MS-FB-001",
@@ -246,6 +255,33 @@
       "address": "42, Test Street, Chennai - 600001",
       "createdAt": "2026-05-22T15:17:09.491Z",
       "updatedAt": "2026-05-22T15:17:09.514Z"
+    },
+    {
+      "id": "ORD-003",
+      "userId": "u2",
+      "customerName": "Priya Shankar",
+      "customerEmail": "customer@test.com",
+      "customerPhone": "+91 9876543210",
+      "items": [
+        {
+          "partId": "p1",
+          "name": "Front Bumper Assembly",
+          "brand": "Maruti Suzuki",
+          "model": "Swift",
+          "price": 2800,
+          "qty": 1
+        }
+      ],
+      "subtotal": 2800,
+      "discount": 280,
+      "total": 2520,
+      "paymentMethod": "COD",
+      "paymentStatus": "Pending",
+      "status": "Processing",
+      "promoCode": "YARD10",
+      "address": "42, Test Street, Chennai - 600001",
+      "createdAt": "2026-07-17T13:38:49.081Z",
+      "updatedAt": "2026-07-17T13:38:49.117Z"
     }
   ],
   "partRequests": [
@@ -289,6 +325,27 @@
       "adminNote": "Checking our network",
       "createdAt": "2026-05-22T15:17:09.516Z",
       "updatedAt": "2026-05-22T15:17:09.525Z"
+    },
+    {
+      "id": "REQ-0003",
+      "brand": "Maruti Suzuki",
+      "model": "WagonR",
+      "year": "2021",
+      "partName": "Left side mirror",
+      "category": "Body",
+      "urgency": "soon",
+      "budgetMin": 500,
+      "budgetMax": 1500,
+      "desc": "",
+      "contactName": "Ravi Kumar",
+      "contactPhone": "+91 9876543210",
+      "contactEmail": "ravi@email.com",
+      "contactMethod": "WhatsApp",
+      "photos": [],
+      "status": "In Progress",
+      "adminNote": "Checking our network",
+      "createdAt": "2026-07-17T13:38:49.124Z",
+      "updatedAt": "2026-07-17T13:38:49.150Z"
     }
   ],
   "promoCodes": [
@@ -312,6 +369,42 @@
     }
   ],
   "activityLog": [
+    {
+      "msg": "Part deleted: Test Wiper Motor",
+      "time": "2026-07-17T13:38:49.182Z"
+    },
+    {
+      "msg": "Part request REQ-0003: Left side mirror for Maruti Suzuki WagonR",
+      "time": "2026-07-17T13:38:49.124Z"
+    },
+    {
+      "msg": "Order ORD-003 → Processing",
+      "time": "2026-07-17T13:38:49.117Z"
+    },
+    {
+      "msg": "New order ORD-003 — ₹2520 by Priya Shankar via COD",
+      "time": "2026-07-17T13:38:49.081Z"
+    },
+    {
+      "msg": "Part updated: Test Wiper Motor",
+      "time": "2026-07-17T13:38:49.054Z"
+    },
+    {
+      "msg": "New part added: Test Wiper Motor (Test Brand TestCar) by admin",
+      "time": "2026-07-17T13:38:49.029Z"
+    },
+    {
+      "msg": "New customer registered: Test User (test1784295528728@test.com)",
+      "time": "2026-07-17T13:38:48.951Z"
+    },
+    {
+      "msg": "Login: Priya Shankar (customer)",
+      "time": "2026-07-17T13:38:48.495Z"
+    },
+    {
+      "msg": "Login: Admin User (admin)",
+      "time": "2026-07-17T13:38:48.262Z"
+    },
     {
       "msg": "Login: Priya Shankar (customer)",
       "time": "2026-05-22T15:23:04.508Z"
